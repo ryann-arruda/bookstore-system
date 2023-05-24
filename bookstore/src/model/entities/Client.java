@@ -10,6 +10,15 @@ public class Client {
 	
 	private Address address;
 	
+	public Client(Client client) {
+		this.name = client.getName();
+		this.age = client.getAge();
+		this.email = client.getEmail();
+		this.isOnePiece = client.getIsOnePiece();
+		this.team = client.getTeam();
+		this.password = client.getPassword();
+	}
+	
 	public Client(String name, int age, String email, Boolean isOnePiece, String team, String password, Address address) {
 		this.name = name;
 		this.age = age;
