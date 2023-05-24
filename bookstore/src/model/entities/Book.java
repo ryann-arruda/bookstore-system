@@ -3,15 +3,15 @@ package model.entities;
 import java.util.List;
 
 public class Book {
-	private String name;
+	private String title;
 	private float price;
 	private String mainGenre;
 	private String placePublication;
 	private int yearPublication;
 	private List<String> authors;
 	
-	public Book(String name, float price, String mainGenre, String placePublication, int yearPublication, List<String> authors) {
-		this.name = name;
+	public Book(String title, float price, String mainGenre, String placePublication, int yearPublication, List<String> authors) {
+		this.title = title;
 		this.price = price;
 		this.mainGenre = mainGenre;
 		this.placePublication = placePublication;
@@ -20,7 +20,7 @@ public class Book {
 	}
 	
 	public String getName() {
-		return name;
+		return title;
 	}
 	
 	public float getPrice() {
@@ -53,7 +53,7 @@ public class Book {
 		int result = 1;
 		result = prime * result + ((authors == null) ? 0 : authors.hashCode());
 		result = prime * result + ((mainGenre == null) ? 0 : mainGenre.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		return result;
 	}
 
@@ -76,10 +76,10 @@ public class Book {
 				return false;
 		} else if (!mainGenre.equals(other.mainGenre))
 			return false;
-		if (name == null) {
-			if (other.name != null)
+		if (title == null) {
+			if (other.title != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!title.equals(other.title))
 			return false;
 		return true;
 	}
