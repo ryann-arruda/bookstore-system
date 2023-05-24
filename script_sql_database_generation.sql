@@ -10,17 +10,24 @@ CREATE TABLE Author(
 );
 
 CREATE TABLE Book(
-	book_id 			INT AUTO_INCREMENT,
-	title 				VARCHAR(110) NOT NULL,
-    genre 				VARCHAR(50) NOT NULL,
-    place_publication   VARCHAR(110) NOT NULL,
-    price				DECIMAL(10,2) NOT NULL,
-    author_id 			INT NOT NULL,
+	book_id 				INT AUTO_INCREMENT,
+	title 					VARCHAR(110) NOT NULL,
+    main_genre 				VARCHAR(50) NOT NULL,
+    place_publication   	VARCHAR(110) NOT NULL,
+	year_publication		INTEGER NOT NULL,
+    price					DECIMAL(10,2) NOT NULL,
     
     CONSTRAINT non_negative_price CHECK (price >= 0.0),
+    CONSTRAINT non_neagtive_year CHECK (year_publication > 0),    
     
-    PRIMARY KEY (book_id),
-    FOREIGN KEY (author_id) REFERENCES Author(author_id)
+    PRIMARY KEY (book_id)
+);
+
+CREATE TABLE Book_Author(
+	book_id					INT NOT NULL,
+    author_id				INT NOT NULL,
+    
+    PRIMARY KEY (book_id, author_id)
 );
 
 CREATE TABLE Address(
@@ -54,7 +61,7 @@ CREATE TABLE Client_t(
 
 CREATE TABLE Order_t(
 	order_t_id			INT AUTO_INCREMENT,
-	total_amount			DECIMAL(20, 2) NOT NULL,
+	total_amount		DECIMAL(20, 2) NOT NULL,
     client_t_id			INT NOT NULL,
     
     CONSTRAINT non_negative_total_amount_order CHECK (total_amount >= 0.0),
