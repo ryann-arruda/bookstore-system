@@ -84,6 +84,10 @@ public class Client {
 	public void setAddress(Address address) {
 		this.address = new Address(address.getThoroughfare(), address.getNeighborhood(), address.getComplement(), address.getNumber(), address.getZipCode());
 	}
+	
+	public void buyBook(Order order, Book book) {
+		order.addNewItem(book);
+	}
 
 	@Override
 	public int hashCode() {
