@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Book {
 	private String name;
-	private Float price;
+	private float price;
 	private String mainGenre;
 	private String placePublication;
-	private Integer yearPublication;
+	private int yearPublication;
 	private List<String> authors;
 	
-	public Book(String name, Float price, String mainGenre, String placePublication, Integer yearPublication, List<String> authors) {
+	public Book(String name, float price, String mainGenre, String placePublication, int yearPublication, List<String> authors) {
 		this.name = name;
 		this.price = price;
 		this.mainGenre = mainGenre;
@@ -23,7 +23,7 @@ public class Book {
 		return name;
 	}
 	
-	public Float getPrice() {
+	public float getPrice() {
 		return price;
 	}
 	
@@ -35,7 +35,7 @@ public class Book {
 		return placePublication;
 	}
 	
-	public Integer getYearPublication() {
+	public int getYearPublication() {
 		return yearPublication;
 	}
 	
@@ -43,7 +43,7 @@ public class Book {
 		return List.copyOf(authors);
 	}
 	
-	public void setPrice(Float price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 

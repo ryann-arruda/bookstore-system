@@ -4,10 +4,18 @@ public class Address {
 	private String thoroughfare;
 	private String neighborhood;
 	private String complement;
-	private Integer number;
+	private int number;
 	private String zipCode;
 	
-	public Address(String thoroughfare, String neighborhood, String complement, Integer number, String zipCode) {
+	public Address(Address address) {
+		this.thoroughfare = address.getThoroughfare();
+		this.neighborhood = address.getNeighborhood();
+		this.complement = address.getComplement();
+		this.number = address.getNumber();
+		this.zipCode = address.getZipCode();
+	}
+	
+	public Address(String thoroughfare, String neighborhood, String complement, int number, String zipCode) {
 		this.thoroughfare = thoroughfare;
 		this.neighborhood = neighborhood;
 		this.complement = complement;
@@ -27,7 +35,7 @@ public class Address {
 		return complement;
 	}
 	
-	public Integer getNumber() {
+	public int getNumber() {
 		return number;
 	}
 	
@@ -47,7 +55,7 @@ public class Address {
 		this.complement = complement;
 	}
 	
-	public void setNumber(Integer number) {
+	public void setNumber(int number) {
 		this.number = number;
 	}
 	
@@ -60,7 +68,7 @@ public class Address {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((neighborhood == null) ? 0 : neighborhood.hashCode());
-		result = prime * result + ((number == null) ? 0 : number.hashCode());
+		result = prime * result + number;
 		result = prime * result + ((thoroughfare == null) ? 0 : thoroughfare.hashCode());
 		result = prime * result + ((zipCode == null) ? 0 : zipCode.hashCode());
 		return result;
@@ -80,10 +88,7 @@ public class Address {
 				return false;
 		} else if (!neighborhood.equals(other.neighborhood))
 			return false;
-		if (number == null) {
-			if (other.number != null)
-				return false;
-		} else if (!number.equals(other.number))
+		if (number != other.number)
 			return false;
 		if (thoroughfare == null) {
 			if (other.thoroughfare != null)
@@ -96,5 +101,5 @@ public class Address {
 		} else if (!zipCode.equals(other.zipCode))
 			return false;
 		return true;
-	}	
+	}
 }
