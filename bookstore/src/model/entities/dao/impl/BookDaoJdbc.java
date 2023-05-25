@@ -38,6 +38,10 @@ private Connection conn;
 			rowsAffected = ps.executeUpdate();
 			ResultSet rs_book = ps.getGeneratedKeys();
 			
+			int book_id = 0;
+			rs_book.next();
+			book_id = rs_book.getInt(1);
+			
 			ps_author = conn.prepareStatement("INSERT INTO Author (author_name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
 			
 			int rowsAffectedAuthors = 0;
@@ -48,20 +52,18 @@ private Connection conn;
 				if(rowsAffectedAuthors > 0) {
 					ResultSet rs_author = ps_author.getGeneratedKeys();
 					int author_id = 0;
-					int book_id = 0;
 					
 					while(rs_author.next()) {
 						author_id = rs_author.getInt(1);
-						
-						rs_book.next();
-						book_id = rs_book.getInt(1);
 					}
 					
 					PreparedStatement psBook_Author = conn.prepareStatement("INSERT INTO Book_Author (book_id, author_id) VALUES " + 
 																			"(?,?)");
 					
-					psBook_Author.setInt(1, author_id);
-					psBook_Author.setInt(2, book_id);
+					psBook_Author.setInt(1, book_id);
+					psBook_Author.setInt(2, author_id);
+
+					psBook_Author.executeUpdate();
 				}
 			}
 			
