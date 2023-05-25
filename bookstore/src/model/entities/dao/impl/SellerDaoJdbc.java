@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import db.Database;
 import db.DatabaseException;
 import model.entities.Client;
 import model.entities.Seller;
@@ -19,7 +20,7 @@ public class SellerDaoJdbc implements SellerDAO{
 
 	@Override
 	public boolean insert(Seller seller) {
-		PreparedStatement ps;
+		PreparedStatement ps = null;
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO Seller (seller_name, age, email, seller_password) " +
@@ -39,6 +40,9 @@ public class SellerDaoJdbc implements SellerDAO{
 		
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closePreparedStatement(ps);
 		}
 		
 		return false;
