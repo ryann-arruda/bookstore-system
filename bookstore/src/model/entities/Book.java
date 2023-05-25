@@ -9,14 +9,16 @@ public class Book {
 	private String placePublication;
 	private int yearPublication;
 	private List<String> authors;
+	private int amountBooks;
 	
-	public Book(String title, float price, String mainGenre, String placePublication, int yearPublication, List<String> authors) {
+	public Book(String title, float price, String mainGenre, String placePublication, int yearPublication, List<String> authors, int amountBooks) {
 		this.title = title;
 		this.price = price;
 		this.mainGenre = mainGenre;
 		this.placePublication = placePublication;
 		this.yearPublication = yearPublication;
 		this.authors = authors;
+		this.amountBooks = amountBooks;
 	}
 	
 	public String getTitle() {
@@ -43,8 +45,28 @@ public class Book {
 		return List.copyOf(authors);
 	}
 	
+	public int getAmountBooks() {
+		return amountBooks;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
 	public void setPrice(float price) {
 		this.price = price;
+	}
+	
+	public void setMainGenre(String mainGenre) {
+		this.mainGenre = mainGenre;
+	}
+	
+	public void setPlacePublication(String placePublication) {
+		this.placePublication = placePublication;
+	}
+	
+	public void setAuthors(List<String> authors) {
+		this.authors = authors;
 	}
 
 	@Override
@@ -82,5 +104,10 @@ public class Book {
 		} else if (!title.equals(other.title))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return getTitle() + " - " + getMainGenre() + " - " + getPlacePublication() + " - " + getYearPublication() + " - " + getAuthors() + "- " + "[R$ " + getPrice() + "]";
 	}
 }
