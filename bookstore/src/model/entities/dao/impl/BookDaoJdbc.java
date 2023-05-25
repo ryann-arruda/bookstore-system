@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import db.Database;
 import db.DatabaseException;
 import model.entities.Book;
 import model.entities.dao.BookDAO;
@@ -18,7 +19,7 @@ private Connection conn;
 
 	@Override
 	public boolean insert(Book book) {
-		PreparedStatement ps;
+		PreparedStatement ps = null;
 		int rowsAffected = 0;
 		
 		try {
@@ -39,6 +40,9 @@ private Connection conn;
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closePreparedStatement(ps);
 		}
 		
 		return false;
