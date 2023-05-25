@@ -59,6 +59,30 @@ CREATE TABLE Client_t(
     FOREIGN KEY (address_id) REFERENCES Address(address_id)
 );
 
+CREATE TABLE Seller(
+	seller_id 			INT AUTO_INCREMENT,
+	seller_name 		VARCHAR(110) NOT NULL,
+    age					INTEGER NOT NULL,
+    email 				VARCHAR(100) NOT NULL,
+    seller_password		VARCHAR(50) NOT NULL,
+    
+	CONSTRAINT seller_age CHECK (age > 0),
+    
+    PRIMARY KEY (seller_id)
+);
+
+CREATE TABLE Manager(
+	manager_id 			INT AUTO_INCREMENT,
+	manager_name 		VARCHAR(110) NOT NULL,
+    age					INTEGER NOT NULL,
+    email 				VARCHAR(100) NOT NULL,
+    manager_password	VARCHAR(50) NOT NULL,
+    
+	CONSTRAINT manager_age CHECK (age > 0),
+    
+    PRIMARY KEY (manager_id)
+);
+
 CREATE TABLE Order_t(
 	order_t_id			INT AUTO_INCREMENT,
 	total_amount		DECIMAL(20, 2) NOT NULL,
@@ -89,4 +113,11 @@ CREATE TABLE Payment(
     
     PRIMARY KEY (payment_id),
     FOREIGN KEY (client_t_id) REFERENCES Client_t(client_t_id)
+);
+
+CREATE TABLE Payment_Seller(
+	payment_id 			INT NOT NULL,
+    seller_id 			INT NOT NULL,
+    
+    PRIMARY KEY (payment_id, seller_id)
 );
