@@ -49,7 +49,7 @@ private Connection conn;
 	}
 
 	@Override
-	public Book retrieve(String name) {
+	public Book retrieve(String title) {
 		// TODO Auto-generated method stub
 		return null;
 	}
