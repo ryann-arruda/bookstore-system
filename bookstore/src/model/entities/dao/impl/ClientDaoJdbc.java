@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import db.Database;
 import db.DatabaseException;
 import model.entities.Client;
 import model.entities.dao.AddressDAO;
@@ -20,7 +21,7 @@ public class ClientDaoJdbc implements ClientDAO{
 	@Override
 	public boolean insert(Client client) {
 		AddressDAO addressDao = DAOFactory.getAddressDAO();
-		PreparedStatement ps;
+		PreparedStatement ps = null;
 		
 		try {
 			int address_id = addressDao.insert(client.getAddress());
@@ -44,6 +45,10 @@ public class ClientDaoJdbc implements ClientDAO{
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closePreparedStatement(ps);
 		}
 		
 		return false;
