@@ -55,9 +55,38 @@ public class AddressDaoJdbc implements AddressDAO{
 	}
 
 	@Override
-	public Address retrive(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Address retrive(int address_id) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			Address address = new Address();
+			
+			ps = conn.prepareStatement("SELECT * FROM Address WHERE address_id = ?");
+			
+			ps.setInt(1, address_id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				address.setThoroughfare(rs.getString("thoroughfare"));
+				address.setNeighborhood(rs.getString("neighborhood"));
+				address.setComplement(rs.getString("complement"));
+				address.setNumber(rs.getInt("house_number"));
+				address.setZipCode(rs.getString("zip_code"));
+			}
+			
+			return address;
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closePreparedStatement(ps);
+		}
 	}
 
 	@Override
