@@ -16,9 +16,11 @@ CREATE TABLE Book(
     place_publication   	VARCHAR(110) NOT NULL,
 	year_publication		INTEGER NOT NULL,
     price					DECIMAL(10,2) NOT NULL,
+    amount_books 			INT NOT NULL,
     
     CONSTRAINT non_negative_price CHECK (price >= 0.0),
-    CONSTRAINT non_neagtive_year CHECK (year_publication > 0),    
+    CONSTRAINT non_negative_year CHECK (year_publication > 0), 
+    CONSTRAINT non_negative_amount_books CHECK (amount_books > 0),
     
     PRIMARY KEY (book_id)
 );
