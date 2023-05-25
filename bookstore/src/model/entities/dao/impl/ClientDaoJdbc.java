@@ -19,7 +19,7 @@ public class ClientDaoJdbc implements ClientDAO{
 	
 	@Override
 	public boolean insert(Client client) {
-		AddressDAO addressDao = DAOFactory.getAddressDAO(conn);
+		AddressDAO addressDao = DAOFactory.getAddressDAO();
 		PreparedStatement ps;
 		
 		try {
