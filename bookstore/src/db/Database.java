@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class Database {
@@ -63,6 +64,15 @@ public class Database {
 	public static void closePreparedStatement(PreparedStatement ps) {
 		try {
 			ps.close();
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+	}
+	
+	public static void closeStatement(Statement st) {
+		try {
+			st.close();
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
