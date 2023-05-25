@@ -7,6 +7,10 @@ public class Address {
 	private int number;
 	private String zipCode;
 	
+	public Address() {
+		
+	}
+	
 	public Address(Address address) {
 		this.thoroughfare = address.getThoroughfare();
 		this.neighborhood = address.getNeighborhood();
