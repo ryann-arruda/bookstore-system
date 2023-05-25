@@ -2,7 +2,9 @@ package model.entities.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import db.Database;
 import db.DatabaseException;
@@ -20,11 +22,12 @@ private Connection conn;
 	@Override
 	public boolean insert(Book book) {
 		PreparedStatement ps = null;
+		PreparedStatement ps_author = null;
 		int rowsAffected = 0;
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO Book (title,main_genre,place_publication,year_publication,price)" +
-									   "VALUES (?,?,?,?,?)");
+									   "VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setString(1, book.getTitle());
 			ps.setString(2,book.getMainGenre());
@@ -33,6 +36,34 @@ private Connection conn;
 			ps.setFloat(5, book.getPrice());
 			
 			rowsAffected = ps.executeUpdate();
+			ResultSet rs_book = ps.getGeneratedKeys();
+			
+			ps_author = conn.prepareStatement("INSERT INTO Author (author_name) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
+			
+			int rowsAffectedAuthors = 0;
+			for(String author: book.getAuthors()) {
+				ps_author.setString(1, author);
+				
+				rowsAffectedAuthors = ps_author.executeUpdate();
+				if(rowsAffectedAuthors > 0) {
+					ResultSet rs_author = ps_author.getGeneratedKeys();
+					int author_id = 0;
+					int book_id = 0;
+					
+					while(rs_author.next()) {
+						author_id = rs_author.getInt(1);
+						
+						rs_book.next();
+						book_id = rs_book.getInt(1);
+					}
+					
+					PreparedStatement psBook_Author = conn.prepareStatement("INSERT INTO Book_Author (book_id, author_id) VALUES " + 
+																			"(?,?)");
+					
+					psBook_Author.setInt(1, author_id);
+					psBook_Author.setInt(2, book_id);
+				}
+			}
 			
 			if(rowsAffected > 0) {
 				return true;
@@ -50,7 +81,6 @@ private Connection conn;
 
 	@Override
 	public Book retrieve(String title) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
