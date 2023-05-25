@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import db.Database;
 import db.DatabaseException;
 import model.entities.Address;
 import model.entities.dao.AddressDAO;
@@ -19,7 +20,7 @@ public class AddressDaoJdbc implements AddressDAO{
 
 	@Override
 	public int insert(Address address) {
-		PreparedStatement ps;
+		PreparedStatement ps = null;
 		int rowsAffected = 0;
 		
 		try {
@@ -45,6 +46,9 @@ public class AddressDaoJdbc implements AddressDAO{
 		
 		catch (SQLException e) {
 			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closePreparedStatement(ps);
 		}
 		
 		return -1;
