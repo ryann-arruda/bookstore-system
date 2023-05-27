@@ -47,14 +47,11 @@ public class Order {
 	
 	public void addNewItem(Book book) {
 		items.add(book);
-		calculateTotalAmount();
+		calculateTotalAmount(book);
 	}
 	
-	private void calculateTotalAmount() {
-		
-		for(Book b: items) {
-			totalAmount += b.getPrice();
-		}
+	private void calculateTotalAmount(Book book) {
+		totalAmount += book.getPrice();
 	}
 	
 	public Payment finalizePurchase(PaymentType paymentType) {
