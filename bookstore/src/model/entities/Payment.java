@@ -15,6 +15,7 @@ public class Payment {
 	
 	public Payment(float totalAmount, PaymentType paymentType, Date paymentTime, Client client) {
 		this.totalAmount = totalAmount;
+		status = PaymentStatus.WAITING;
 		this.paymentType = paymentType;
 		this.paymentTime = paymentTime;
 		this.client = client;
