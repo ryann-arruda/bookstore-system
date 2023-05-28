@@ -13,6 +13,14 @@ public class Payment {
 	
 	private Client client;
 	
+	public Payment(Payment payment) {
+		this.totalAmount = payment.getTotalAmount();
+		this.status = payment.getStatus();
+		this.paymentType = payment.getPaymentType();
+		this.paymentTime = payment.getPaymentTime();
+		this.client = payment.getClient();
+	}
+	
 	public Payment(float totalAmount, PaymentType paymentType, Date paymentTime, Client client) {
 		this.totalAmount = totalAmount;
 		status = PaymentStatus.WAITING;
