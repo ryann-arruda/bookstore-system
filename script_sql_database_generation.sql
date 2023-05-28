@@ -2,13 +2,6 @@ CREATE DATABASE bookstore;
 
 USE bookstore;
 
-CREATE TABLE Author(
-	author_id 			INT AUTO_INCREMENT,
-    author_name			VARCHAR(110) NOT NULL,
-    
-	PRIMARY KEY (author_id)
-);
-
 CREATE TABLE Book(
 	book_id 				INT AUTO_INCREMENT,
 	title 					VARCHAR(110) NOT NULL,
@@ -45,6 +38,19 @@ CREATE TABLE Address(
     PRIMARY KEY (address_id)
 );
 
+CREATE TABLE Author(
+	author_id 			INT AUTO_INCREMENT,
+    author_name			VARCHAR(110) NOT NULL,
+    age 				INTEGER NOT NULL,
+    email 				VARCHAR(100) NOT NULL,
+    address_id			INT NOT NULL,
+    
+    CONSTRAINT author_invalid_age CHECK (age > 0),
+    
+    PRIMARY KEY (author_id),
+    FOREIGN KEY (address_id) REFERENCES Address(address_id)
+);
+
 CREATE TABLE Client_t(
 	client_t_id 		INT AUTO_INCREMENT,
     client_t_name 		VARCHAR(110) NOT NULL,
@@ -55,7 +61,7 @@ CREATE TABLE Client_t(
     client_t_password 	VARCHAR(50) NOT NULL,
     address_id			INT NOT NULL,
     
-    CONSTRAINT invalid_age CHECK (age > 0),
+    CONSTRAINT client_t_invalid_age CHECK (age > 0),
     
     PRIMARY KEY (client_t_id),
     FOREIGN KEY (address_id) REFERENCES Address(address_id)
