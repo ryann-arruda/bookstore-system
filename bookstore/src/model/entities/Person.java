@@ -4,15 +4,13 @@ public class Person {
 	private String name;
 	private int age;
 	private String email;
-	private String password;
 	
 	private Address address;
 	
-	public Person(String name, int age, String email, String password, Address address) {
+	public Person(String name, int age, String email, Address address) {
 		this.name = name;
 		this.age = age;
 		this.email = email;
-		this.password = password;
 		this.address = address;
 	}
 
@@ -26,10 +24,6 @@ public class Person {
 
 	public String getEmail() {
 		return email;
-	}
-	
-	public String getPassword() {
-		return password;
 	}
 
 	public Address getAddress() {
@@ -47,10 +41,6 @@ public class Person {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
 	public void setAddress(Address address) {
 		this.address = new Address(address);
@@ -60,10 +50,10 @@ public class Person {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((address == null) ? 0 : address.hashCode());
 		result = prime * result + age;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		return result;
 	}
 
@@ -76,6 +66,11 @@ public class Person {
 		if (getClass() != obj.getClass())
 			return false;
 		Person other = (Person) obj;
+		if (address == null) {
+			if (other.address != null)
+				return false;
+		} else if (!address.equals(other.address))
+			return false;
 		if (age != other.age)
 			return false;
 		if (email == null) {
@@ -88,14 +83,9 @@ public class Person {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
