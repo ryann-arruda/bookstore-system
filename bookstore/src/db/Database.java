@@ -61,15 +61,6 @@ public class Database {
 		}
 	}
 	
-	public static void closePreparedStatement(PreparedStatement ps) {
-		try {
-			ps.close();
-		}
-		catch(SQLException e) {
-			throw new DatabaseException(e.getMessage());
-		}
-	}
-	
 	public static void closeStatement(Statement st) {
 		try {
 			st.close();
