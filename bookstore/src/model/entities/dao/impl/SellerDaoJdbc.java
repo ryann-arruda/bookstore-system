@@ -42,7 +42,7 @@ public class SellerDaoJdbc implements SellerDAO{
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
-			Database.closePreparedStatement(ps);
+			Database.closeStatement(ps);
 		}
 		
 		return false;
