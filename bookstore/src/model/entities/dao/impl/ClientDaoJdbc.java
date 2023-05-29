@@ -48,7 +48,7 @@ public class ClientDaoJdbc implements ClientDAO{
 		}
 		
 		finally {
-			Database.closePreparedStatement(ps);
+			Database.closeStatement(ps);
 		}
 		
 		return false;
