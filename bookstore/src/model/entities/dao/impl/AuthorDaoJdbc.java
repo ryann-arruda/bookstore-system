@@ -2,7 +2,9 @@ package model.entities.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import db.Database;
 import db.DatabaseException;
@@ -46,7 +48,7 @@ private Connection conn;
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
-			Database.closePreparedStatement(ps);
+			Database.closeStatement(ps);
 		}
 		
 		return false;
