@@ -5,9 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import db.Database;
 import db.DatabaseException;
+import model.entities.Address;
 import model.entities.Author;
 import model.entities.dao.AddressDAO;
 import model.entities.dao.AuthorDAO;
@@ -72,4 +75,35 @@ private Connection conn;
 		return false;
 	}
 
+	@Override
+	public List<Author> retrieveAllAuthorsBook(String bookTitle) {
+		AddressDAO addrdao = DAOFactory.getAddressDAO();
+		List<Author> authors = new ArrayList<Author>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT * FROM Author A, Book B INNER JOIN Book_Author BA ON B.book_id = BA.book_id " + 
+		   			 					"WHERE BA.author_id = A.author_id AND B.title = ?");
+			
+			ps.setString(1, bookTitle);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Address addr = addrdao.retrive(rs.getInt("address_id"));
+				
+				authors.add(new Author(rs.getString("author_name"), rs.getInt("age"), rs.getString("email"), addr));
+			}
+			
+			return authors;
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+	}
 }
