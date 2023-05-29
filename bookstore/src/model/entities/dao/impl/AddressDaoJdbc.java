@@ -48,7 +48,7 @@ public class AddressDaoJdbc implements AddressDAO{
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
-			Database.closePreparedStatement(ps);
+			Database.closeStatement(ps);
 		}
 		
 		return -1;
@@ -85,7 +85,7 @@ public class AddressDaoJdbc implements AddressDAO{
 		
 		finally {
 			Database.closeResultSet(rs);
-			Database.closePreparedStatement(ps);
+			Database.closeStatement(ps);
 		}
 	}
 
