@@ -8,9 +8,9 @@ public class Book {
 	private String mainGenre;
 	private String placePublication;
 	private int yearPublication;
-	private List<String> authors;
+	private List<Author> authors;
 	
-	public Book(String title, float price, String mainGenre, String placePublication, int yearPublication, List<String> authors) {
+	public Book(String title, float price, String mainGenre, String placePublication, int yearPublication, List<Author> authors) {
 		this.title = title;
 		this.price = price;
 		this.mainGenre = mainGenre;
@@ -39,7 +39,7 @@ public class Book {
 		return yearPublication;
 	}
 	
-	public List<String> getAuthors(){
+	public List<Author> getAuthors(){
 		return List.copyOf(authors);
 	}
 	
@@ -59,7 +59,7 @@ public class Book {
 		this.placePublication = placePublication;
 	}
 	
-	public void setAuthors(List<String> authors) {
+	public void setAuthors(List<Author> authors) {
 		this.authors = authors;
 	}
 
