@@ -123,4 +123,31 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeStatement(ps);
 		}
 	}
+
+	@Override
+	public int retrieveBookId(String title) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT book_id FROM Book WHERE title = ?");
+			
+			ps.setString(1, title);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				return rs.getInt("book_id");
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return -1;
+	}
 }
