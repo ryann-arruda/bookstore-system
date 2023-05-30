@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.Database;
@@ -84,5 +85,42 @@ public class BookDaoJdbc implements BookDAO{
 	public Book listOneBook() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<Book> retrieveAllBooksAuthor(String authorName) {
+		AuthorDAO authorDao = DAOFactory.getAuthorDAO();
+		List<Author> authors = new ArrayList<>();
+		List<Book> books = new ArrayList<>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try{
+			ps = conn.prepareStatement("SELECT * FROM Book B, Author A INNER JOIN Book_Author BA ON " +
+									   "A.author_id = BA.author_id WHERE BA.book_id = B.book_id AND A.author_name = ?");
+			
+			
+			ps.setString(1, authorName);
+
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				String bookTitle = rs.getString("title");
+				
+				authors = authorDao.retrieveAllAuthorsBook(bookTitle);
+
+				books.add(new Book(bookTitle, rs.getFloat("price"), rs.getString("main_genre"),
+						  rs.getString("place_publication"), rs.getInt("year_publication"), authors));
+			}
+			
+			return books;
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
 	}
 }
