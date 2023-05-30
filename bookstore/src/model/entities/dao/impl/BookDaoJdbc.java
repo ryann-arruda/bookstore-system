@@ -70,8 +70,35 @@ public class BookDaoJdbc implements BookDAO{
 	}
 
 	@Override
-	public boolean update(Book book) {
-		// TODO Auto-generated method stub
+	public boolean update(Book book, String currentTitle) {
+		PreparedStatement ps = null;
+		
+		try {
+			int bookId = retrieveBookId(currentTitle);
+			
+			ps = conn.prepareStatement("UPDATE Book SET title = ?, main_genre = ?, place_publication = ?, " + 
+									   "year_publication = ?, price = ? WHERE book_id = ?");
+			
+			ps.setString(1, book.getTitle());
+			ps.setString(2, book.getMainGenre());
+			ps.setString(3, book.getPlacePublication());
+			ps.setInt(4, book.getYearPublication());
+			ps.setFloat(5, book.getPrice());
+			ps.setInt(6, bookId);
+			
+			int rowsAffected = ps.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				return true;
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
 		return false;
 	}
 
