@@ -11,4 +11,5 @@ public interface BookDAO {
 	boolean update(Book book);
 	List<Book> listAll();
 	Book listOneBook();
+	List<Book> retrieveAllBooksAuthor(String authorName);
 }
