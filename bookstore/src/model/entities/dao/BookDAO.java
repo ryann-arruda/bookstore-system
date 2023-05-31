@@ -13,4 +13,5 @@ public interface BookDAO {
 	Book listOneBook();
 	List<Book> retrieveAllBooksAuthor(String authorName);
 	int retrieveBookId(String title);
+	int retrieveAmountBooks(String title);
 }

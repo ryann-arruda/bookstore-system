@@ -24,8 +24,8 @@ public class BookDaoJdbc implements BookDAO{
 
 	@Override
 	public boolean insert(Book book) {
-		// TODO Auto-generated method stub
-		return false;
+		if(retrieve(book.getTitle()) != null) {
+		}
 	}
 
 	@Override
@@ -196,4 +196,32 @@ public class BookDaoJdbc implements BookDAO{
 		
 		return -1;
 	}
+
+	@Override
+	public int retrieveAmountBooks(String title) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			ps = conn.prepareStatement("SELECT amount_books FROM Book WHERE title = ?");
+			
+			ps.setString(1, title);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				return rs.getInt("amount_books");
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return -1;
+	}
+	
 }
