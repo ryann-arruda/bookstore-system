@@ -65,7 +65,26 @@ public class BookDaoJdbc implements BookDAO{
 
 	@Override
 	public boolean deleteById(int id) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		
+		try {
+			ps = conn.prepareStatement("DELETE FROM Book WHERE book_id = ?");
+			
+			ps.setInt(1, id);
+			
+			int rowsAffected = ps.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				return true;
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
 		return false;
 	}
 
