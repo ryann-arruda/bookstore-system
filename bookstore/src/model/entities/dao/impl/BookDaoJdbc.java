@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class BookDaoJdbc implements BookDAO{
 
 	@Override
 	public boolean insert(Book book) {
-		if(retrieve(book.getTitle()) != null) {
-		}
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
@@ -123,8 +124,34 @@ public class BookDaoJdbc implements BookDAO{
 
 	@Override
 	public List<Book> listAll() {
-		// TODO Auto-generated method stub
-		return null;
+		AuthorDAO authorDao = DAOFactory.getAuthorDAO();
+		List<Book> books = new ArrayList<>();
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.createStatement();
+			
+			rs = st.executeQuery("SELECT * FROM Book");
+			
+			while(rs.next()) {
+				String bookTitle = rs.getString("title");
+				
+				List<Author> authors = authorDao.retrieveAllAuthorsBook(bookTitle);
+				
+				books.add(new Book(bookTitle, rs.getFloat("price"), rs.getString("main_genre"),
+						 rs.getString("place_publication"), rs.getInt("year_publication"), authors));
+			}
+			
+			return books;
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(st);
+		}
 	}
 
 	@Override
