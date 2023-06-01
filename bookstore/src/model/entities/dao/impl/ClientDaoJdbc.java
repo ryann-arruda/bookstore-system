@@ -22,6 +22,7 @@ public class ClientDaoJdbc implements ClientDAO{
 	public boolean insert(Client client) {
 		AddressDAO addressDao = DAOFactory.getAddressDAO();
 		PreparedStatement ps = null;
+		int rowsAffected = -1;
 		
 		try {
 			int address_id = addressDao.insert(client.getAddress());
@@ -37,11 +38,7 @@ public class ClientDaoJdbc implements ClientDAO{
 			ps.setString(6, client.getPassword());
 			ps.setInt(7, address_id);
 			
-			int rowsAffected = ps.executeUpdate();
-			
-			if (rowsAffected > 0) {
-				return true;
-			}
+			rowsAffected = ps.executeUpdate();
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -49,6 +46,10 @@ public class ClientDaoJdbc implements ClientDAO{
 		
 		finally {
 			Database.closeStatement(ps);
+		}
+		
+		if (rowsAffected > 0) {
+			return true;
 		}
 		
 		return false;
