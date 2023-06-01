@@ -54,7 +54,9 @@ public class Database {
 	
 	public static void closeResultSet(ResultSet rs) {
 		try {
-			rs.close();
+			if(rs != null) {
+				rs.close();
+			}
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -63,7 +65,9 @@ public class Database {
 	
 	public static void closeStatement(Statement st) {
 		try {
-			st.close();
+			if(st != null) {
+				st.close();
+			}
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
