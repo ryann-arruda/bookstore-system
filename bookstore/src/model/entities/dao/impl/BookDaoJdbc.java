@@ -25,7 +25,73 @@ public class BookDaoJdbc implements BookDAO{
 
 	@Override
 	public boolean insert(Book book) {
-		// TODO Auto-generated method stub
+		AuthorDAO authorDao = DAOFactory.getAuthorDAO();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int rowsAffected = -1;
+		
+		try {
+			if(retrieve(book.getTitle()) != null) {
+				int amount = retrieveAmountBooks(book.getTitle());
+				
+				ps = conn.prepareStatement("UPDATE Book SET amount_books = ? WHERE title = ?");
+				
+				ps.setInt(1, amount+1);
+				ps.setString(2, book.getTitle());
+				
+				rowsAffected = ps.executeUpdate();
+			}
+			else {
+				ps = conn.prepareStatement("INSERT INTO Book(title,main_genre,place_publication,year_publication,price,amount_books) " +
+										   "VALUES (?,?,?,?,?,1)", Statement.RETURN_GENERATED_KEYS);
+				
+				ps.setString(1, book.getTitle());
+				ps.setString(2, book.getMainGenre());
+				ps.setString(3, book.getPlacePublication());
+				ps.setInt(4, book.getYearPublication());
+				ps.setFloat(5, book.getPrice());
+				
+				rowsAffected = ps.executeUpdate();
+				
+				int bookId = -1;
+				
+				if(rowsAffected > 0) {
+					rs = ps.getGeneratedKeys();
+					
+					while(rs.next()) {
+						bookId = rs.getInt(1);
+						
+					}
+					
+					rowsAffected = -1;
+					
+					for(Author a : book.getAuthors()) {
+						int authorId = authorDao.insert(a);
+						
+						ps = conn.prepareStatement("INSERT INTO Book_Author(book_id,author_id) " +
+												   "VALUES (?,?)");
+						
+						ps.setInt(1, bookId);
+						ps.setInt(2, authorId);
+						
+						rowsAffected = ps.executeUpdate();
+					}
+				}
+				
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
