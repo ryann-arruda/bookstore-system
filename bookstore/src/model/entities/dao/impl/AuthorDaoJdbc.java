@@ -25,13 +25,16 @@ private Connection conn;
 	}
 
 	@Override
-	public boolean insert(Author author) {
+	public int insert(Author author) {
 		AddressDAO addressDJ = DAOFactory.getAddressDAO();
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 		int rowsAffected = -1;
+		int authorId = -1;
 		
 		try {
-			ps = conn.prepareStatement("INSERT INTO Author(author_name, age, email, address_id) VALUES (?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO Author(author_name, age, email, address_id) VALUES (?,?,?,?)", 
+										Statement.RETURN_GENERATED_KEYS);
 			
 			ps.setString(1, author.getName());
 			ps.setInt(2, author.getAge());
@@ -42,20 +45,25 @@ private Connection conn;
 			ps.setInt(4, addressId);
 			
 			rowsAffected = ps.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				rs = ps.getGeneratedKeys();
+				
+				while(rs.next()) {
+					authorId = rs.getInt(1);
+				}
+			}
 		}
 		
 		catch (SQLException e) {
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
+			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 		
-		if(rowsAffected > 0) {
-			return true;
-		}
-		
-		return false;
+		return authorId;
 	}
 
 	@Override
