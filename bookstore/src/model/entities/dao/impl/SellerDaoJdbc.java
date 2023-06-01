@@ -21,6 +21,7 @@ public class SellerDaoJdbc implements SellerDAO{
 	@Override
 	public boolean insert(Seller seller) {
 		PreparedStatement ps = null;
+		int rowsAffected = -1;
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO Seller (seller_name, age, email, seller_password) " +
@@ -31,11 +32,7 @@ public class SellerDaoJdbc implements SellerDAO{
 			ps.setString(3, seller.getEmail());
 			ps.setString(4,  seller.getPassword());
 			
-			int rowsAffected = ps.executeUpdate();
-			
-			if (rowsAffected > 0) {
-				return true;
-			}
+			rowsAffected = ps.executeUpdate();
 		}
 		
 		catch(SQLException e) {
@@ -43,6 +40,10 @@ public class SellerDaoJdbc implements SellerDAO{
 		}
 		finally {
 			Database.closeStatement(ps);
+		}
+		
+		if (rowsAffected > 0) {
+			return true;
 		}
 		
 		return false;
