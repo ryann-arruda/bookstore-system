@@ -22,6 +22,7 @@ public class AddressDaoJdbc implements AddressDAO{
 	public int insert(Address address) {
 		PreparedStatement ps = null;
 		int rowsAffected = 0;
+		int addressId = -1;
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO address (thoroughfare, neighborhood, complement, house_number, zip_code) " +
@@ -39,7 +40,7 @@ public class AddressDaoJdbc implements AddressDAO{
 				ResultSet rs = ps.getGeneratedKeys();
 				
 				while(rs.next()) {
-					return rs.getInt(1);
+					addressId = rs.getInt(1);
 				}
 			}
 		}
@@ -51,16 +52,17 @@ public class AddressDaoJdbc implements AddressDAO{
 			Database.closeStatement(ps);
 		}
 		
-		return -1;
+		return addressId;
 	}
 
 	@Override
 	public Address retrive(int address_id) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		Address address = null;
 		
 		try {
-			Address address = new Address();
+			address = new Address();
 			
 			ps = conn.prepareStatement("SELECT * FROM Address WHERE address_id = ?");
 			
@@ -75,8 +77,6 @@ public class AddressDaoJdbc implements AddressDAO{
 				address.setNumber(rs.getInt("house_number"));
 				address.setZipCode(rs.getString("zip_code"));
 			}
-			
-			return address;
 		}
 		
 		catch(SQLException e) {
@@ -87,6 +87,8 @@ public class AddressDaoJdbc implements AddressDAO{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
+		
+		return address;
 	}
 
 	@Override
