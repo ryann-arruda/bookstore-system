@@ -35,11 +35,9 @@ public class BookDaoJdbc implements BookDAO{
 		AuthorDAO authorDao = DAOFactory.getAuthorDAO();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		Book book = null;
 		
 		try {
-			
-			Book book;
-			
 			ps =  conn.prepareStatement("SELECT * FROM Book WHERE title = ?");
 			
 			ps.setString(1, title);
@@ -50,8 +48,6 @@ public class BookDaoJdbc implements BookDAO{
 				authors = authorDao.retrieveAllAuthorsBook(title);
 				book = new Book(rs.getString("title"),rs.getFloat("price"), rs.getString("main_genre"),
 								rs.getString("place_publication"), rs.getInt("year_publication"), authors);
-				
-				return book;
 			}
 		}
 		catch(SQLException e){
@@ -61,23 +57,21 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
-		return null;
+		
+		return book;
 	}
 
 	@Override
 	public boolean deleteById(int id) {
 		PreparedStatement ps = null;
+		int rowsAffected = -1;
 		
 		try {
 			ps = conn.prepareStatement("DELETE FROM Book WHERE book_id = ?");
 			
 			ps.setInt(1, id);
 			
-			int rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				return true;
-			}
+			rowsAffected = ps.executeUpdate();
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -86,12 +80,17 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeStatement(ps);
 		}
 		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean update(Book book, String currentTitle) {
 		PreparedStatement ps = null;
+		int rowsAffected = -1;
 		
 		try {
 			int bookId = retrieveBookId(currentTitle);
@@ -106,17 +105,17 @@ public class BookDaoJdbc implements BookDAO{
 			ps.setFloat(5, book.getPrice());
 			ps.setInt(6, bookId);
 			
-			int rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				return true;
-			}
+			rowsAffected = ps.executeUpdate();
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
 			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
 		}
 		
 		return false;
@@ -142,8 +141,6 @@ public class BookDaoJdbc implements BookDAO{
 				books.add(new Book(bookTitle, rs.getFloat("price"), rs.getString("main_genre"),
 						 rs.getString("place_publication"), rs.getInt("year_publication"), authors));
 			}
-			
-			return books;
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -152,6 +149,8 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeResultSet(rs);
 			Database.closeStatement(st);
 		}
+		
+		return books;
 	}
 
 	@Override
@@ -185,8 +184,6 @@ public class BookDaoJdbc implements BookDAO{
 				books.add(new Book(bookTitle, rs.getFloat("price"), rs.getString("main_genre"),
 						  rs.getString("place_publication"), rs.getInt("year_publication"), authors));
 			}
-			
-			return books;
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -195,12 +192,15 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
+		
+		return books;
 	}
 
 	@Override
 	public int retrieveBookId(String title) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		int bookId = -1;
 		
 		try {
 			ps = conn.prepareStatement("SELECT book_id FROM Book WHERE title = ?");
@@ -210,7 +210,7 @@ public class BookDaoJdbc implements BookDAO{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				return rs.getInt("book_id");
+				bookId = rs.getInt("book_id");
 			}
 		}
 		catch(SQLException e) {
@@ -221,13 +221,14 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeStatement(ps);
 		}
 		
-		return -1;
+		return bookId;
 	}
 
 	@Override
 	public int retrieveAmountBooks(String title) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		int amountBooks = -1;
 		
 		try {
 			ps = conn.prepareStatement("SELECT amount_books FROM Book WHERE title = ?");
@@ -237,7 +238,7 @@ public class BookDaoJdbc implements BookDAO{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				return rs.getInt("amount_books");
+				amountBooks = rs.getInt("amount_books");
 			}
 		}
 		catch(SQLException e) {
@@ -248,7 +249,7 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeStatement(ps);
 		}
 		
-		return -1;
+		return amountBooks;
 	}
 	
 }
