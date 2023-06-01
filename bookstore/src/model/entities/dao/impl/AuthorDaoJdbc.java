@@ -28,6 +28,7 @@ private Connection conn;
 	public boolean insert(Author author) {
 		AddressDAO addressDJ = DAOFactory.getAddressDAO();
 		PreparedStatement ps = null;
+		int rowsAffected = -1;
 		
 		try {
 			ps = conn.prepareStatement("INSERT INTO Author(author_name, age, email, address_id) VALUES (?,?,?,?)");
@@ -40,11 +41,7 @@ private Connection conn;
 			
 			ps.setInt(4, addressId);
 			
-			int rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				return true;
-			}
+			rowsAffected = ps.executeUpdate();
 		}
 		
 		catch (SQLException e) {
@@ -52,6 +49,10 @@ private Connection conn;
 		}
 		finally {
 			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
 		}
 		
 		return false;
@@ -95,8 +96,6 @@ private Connection conn;
 				
 				authors.add(new Author(rs.getString("author_name"), rs.getInt("age"), rs.getString("email"), addr));
 			}
-			
-			return authors;
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -105,5 +104,7 @@ private Connection conn;
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
+		
+		return authors;
 	}
 }
