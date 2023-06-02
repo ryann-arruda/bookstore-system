@@ -10,4 +10,5 @@ public interface AuthorDAO {
 	boolean deleteById(int id);
 	boolean update(Author author);
 	List<Author> retrieveAllAuthorsBook(String bookTitle);
+	int retrieveAuhtorID(String email);
 }
