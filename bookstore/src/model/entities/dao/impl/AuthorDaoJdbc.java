@@ -117,7 +117,7 @@ private Connection conn;
 	}
 
 	@Override
-	public int retrieveAuhtorID(String email) {
+	public int retrieveAuthorId(String email) {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int authorId = -1;
