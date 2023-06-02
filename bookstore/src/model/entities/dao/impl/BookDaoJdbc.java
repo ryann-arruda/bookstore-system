@@ -127,6 +127,7 @@ public class BookDaoJdbc implements BookDAO{
 		return book;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public boolean deleteById(int id) {
 		PreparedStatement ps = null;
@@ -138,6 +139,16 @@ public class BookDaoJdbc implements BookDAO{
 			ps.setInt(1, id);
 			
 			rowsAffected = ps.executeUpdate();
+			
+			if(rowsAffected > 0) {
+				rowsAffected = -1;
+				
+				ps = conn.prepareStatement("DELETE FROM Book_Author WHERE book_id = ?");
+				
+				ps.setInt(1, id);
+				
+				rowsAffected = ps.executeUpdate();
+			}
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
