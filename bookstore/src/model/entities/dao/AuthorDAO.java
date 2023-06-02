@@ -6,7 +6,7 @@ import model.entities.Author;
 
 public interface AuthorDAO {
 	int insert(Author author);
-	Author retrive(String name);
+	Author retrive(String email);
 	boolean deleteById(int id);
 	boolean update(Author author);
 	List<Author> retrieveAllAuthorsBook(String bookTitle);
