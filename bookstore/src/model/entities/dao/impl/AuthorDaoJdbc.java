@@ -33,24 +33,28 @@ private Connection conn;
 		int authorId = -1;
 		
 		try {
-			ps = conn.prepareStatement("INSERT INTO Author(author_name, age, email, address_id) VALUES (?,?,?,?)", 
-										Statement.RETURN_GENERATED_KEYS);
+			authorId = retrieveAuthorId(author.getEmail()); 
 			
-			ps.setString(1, author.getName());
-			ps.setInt(2, author.getAge());
-			ps.setString(3, author.getEmail());
-			
-			int addressId = addressDJ.insert(author.getAddress());
-			
-			ps.setInt(4, addressId);
-			
-			rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				rs = ps.getGeneratedKeys();
+			if(authorId != -1) {
+				ps = conn.prepareStatement("INSERT INTO Author(author_name, age, email, address_id) VALUES (?,?,?,?)", 
+											Statement.RETURN_GENERATED_KEYS);
 				
-				while(rs.next()) {
-					authorId = rs.getInt(1);
+				ps.setString(1, author.getName());
+				ps.setInt(2, author.getAge());
+				ps.setString(3, author.getEmail());
+				
+				int addressId = addressDJ.insert(author.getAddress());
+				
+				ps.setInt(4, addressId);
+				
+				rowsAffected = ps.executeUpdate();
+				
+				if(rowsAffected > 0) {
+					rs = ps.getGeneratedKeys();
+					
+					while(rs.next()) {
+						authorId = rs.getInt(1);
+					}
 				}
 			}
 		}
