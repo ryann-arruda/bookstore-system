@@ -115,4 +115,32 @@ private Connection conn;
 		
 		return authors;
 	}
+
+	@Override
+	public int retrieveAuhtorID(String email) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int authorId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT author_id FROM Author WHERE email = ?");
+			
+			ps.setString(1, email);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				authorId = rs.getInt(1);
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return authorId;
+	}
 }
