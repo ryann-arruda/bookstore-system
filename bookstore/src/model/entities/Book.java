@@ -10,6 +10,10 @@ public class Book {
 	private int yearPublication;
 	private List<Author> authors;
 	
+	public Book() {
+		
+	}
+	
 	public Book(String title, float price, String mainGenre, String placePublication, int yearPublication, List<Author> authors) {
 		this.title = title;
 		this.price = price;
@@ -57,6 +61,10 @@ public class Book {
 	
 	public void setPlacePublication(String placePublication) {
 		this.placePublication = placePublication;
+	}
+	
+	public void setYearPublication(int yearPublication) {
+		this.yearPublication = yearPublication;
 	}
 	
 	public void setAuthors(List<Author> authors) {
