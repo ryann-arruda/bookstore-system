@@ -10,7 +10,7 @@ public interface BookDAO {
 	boolean deleteById(int id);
 	boolean update(Book book, String currentTitle);
 	List<Book> listAll();
-	Book listOneBook();
+	Book listFirstBook();
 	List<Book> retrieveAllBooksAuthor(String authorName);
 	int retrieveBookId(String title);
 	int retrieveAmountBooks(String title);
