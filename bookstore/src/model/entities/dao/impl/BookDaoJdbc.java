@@ -22,6 +22,19 @@ public class BookDaoJdbc implements BookDAO{
 	public BookDaoJdbc(Connection conn) {
 		this.conn = conn;
 	}
+	
+	private Book instantiateBook(ResultSet rs, List<Author> authors) throws SQLException{
+		Book book = new Book();
+		
+		book.setTitle(rs.getString("title"));
+		book.setPrice(rs.getFloat("price"));
+		book.setMainGenre(rs.getString("main_genre"));
+		book.setPlacePublication(rs.getString("place_publication"));
+		book.setYearPublication(rs.getInt("year_publication"));
+		book.setAuthors(authors);
+		
+		return book;
+	}
 
 	@Override
 	public boolean insert(Book book) {
@@ -115,8 +128,7 @@ public class BookDaoJdbc implements BookDAO{
 			
 			while(rs.next()) {
 				authors = authorDao.retrieveAllAuthorsBook(title);
-				book = new Book(rs.getString("title"),rs.getFloat("price"), rs.getString("main_genre"),
-								rs.getString("place_publication"), rs.getInt("year_publication"), authors);
+				book = instantiateBook(rs, authors);
 			}
 		}
 		catch(SQLException e){
@@ -218,8 +230,7 @@ public class BookDaoJdbc implements BookDAO{
 				
 				List<Author> authors = authorDao.retrieveAllAuthorsBook(bookTitle);
 				
-				books.add(new Book(bookTitle, rs.getFloat("price"), rs.getString("main_genre"),
-						 rs.getString("place_publication"), rs.getInt("year_publication"), authors));
+				books.add(instantiateBook(rs, authors));
 			}
 		}
 		catch(SQLException e) {
@@ -234,9 +245,35 @@ public class BookDaoJdbc implements BookDAO{
 	}
 
 	@Override
-	public Book listOneBook() {
-		// TODO Auto-generated method stub
-		return null;
+	public Book listFirstBook() {
+		AuthorDAO authorDao = null;
+		Statement st = null;
+		ResultSet rs = null;
+		Book book = null;
+		
+		try {
+			authorDao = DAOFactory.getAuthorDAO();
+			st = conn.createStatement();
+			
+			rs = st.executeQuery("SELECT * FROM Book WHERE book_id = 1");
+			
+			while(rs.next()) {
+				String title = rs.getString("title");
+				
+				List<Author> authors = authorDao.retrieveAllAuthorsBook(title);
+				book = instantiateBook(rs, authors);
+			}
+		}
+		
+		catch(SQLException e) {
+			
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(st);
+		}
+		
+		return book;
 	}
 
 	@Override
@@ -256,13 +293,10 @@ public class BookDaoJdbc implements BookDAO{
 
 			rs = ps.executeQuery();
 			
-			while(rs.next()) {
-				String bookTitle = rs.getString("title");
-				
-				authors = authorDao.retrieveAllAuthorsBook(bookTitle);
+			while(rs.next()) {				
+				authors = authorDao.retrieveAllAuthorsBook(rs.getString("title"));
 
-				books.add(new Book(bookTitle, rs.getFloat("price"), rs.getString("main_genre"),
-						  rs.getString("place_publication"), rs.getInt("year_publication"), authors));
+				books.add(instantiateBook(rs, authors));
 			}
 		}
 		catch(SQLException e) {
