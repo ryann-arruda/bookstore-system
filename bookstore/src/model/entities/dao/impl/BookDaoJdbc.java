@@ -29,9 +29,12 @@ public class BookDaoJdbc implements BookDAO{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int rowsAffected = -1;
+		int bookId = -1;
 		
 		try {
-			if(retrieve(book.getTitle()) != null) {
+			bookId = retrieveBookId(book.getTitle());
+			
+			if(bookId != -1) {
 				int amount = retrieveAmountBooks(book.getTitle());
 				
 				ps = conn.prepareStatement("UPDATE Book SET amount_books = ? WHERE title = ?");
@@ -53,7 +56,7 @@ public class BookDaoJdbc implements BookDAO{
 				
 				rowsAffected = ps.executeUpdate();
 				
-				int bookId = -1;
+				bookId = -1;
 				
 				if(rowsAffected > 0) {
 					rs = ps.getGeneratedKeys();
