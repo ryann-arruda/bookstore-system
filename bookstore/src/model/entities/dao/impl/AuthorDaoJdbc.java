@@ -12,8 +12,10 @@ import db.Database;
 import db.DatabaseException;
 import model.entities.Address;
 import model.entities.Author;
+import model.entities.Book;
 import model.entities.dao.AddressDAO;
 import model.entities.dao.AuthorDAO;
+import model.entities.dao.BookDAO;
 import model.entities.dao.DAOFactory;
 
 public class AuthorDaoJdbc implements AuthorDAO {
@@ -22,6 +24,28 @@ private Connection conn;
 	
 	public AuthorDaoJdbc(Connection conn) {
 		this.conn = conn;
+	}
+	
+	private Author instantiateAuthor(ResultSet rs) throws SQLException{
+		AddressDAO addressDao = DAOFactory.getAddressDAO();;
+		BookDAO bookDao = DAOFactory.getBookDAO();
+		
+		Author author = new Author();
+		
+		List<Book> books = bookDao.retrieveAllBooksAuthor(author.getName());
+		
+		Address addr = addressDao.retrive(rs.getInt("address_id"));
+		
+		author.setName(rs.getString("author_name"));
+		author.setEmail(rs.getString("email"));
+		author.setAge(rs.getInt("age"));
+		author.setAddress(addr);
+		
+		for(Book b: books) {
+			author.addBook(b);
+		}
+		
+		return author;
 	}
 
 	@Override
@@ -72,23 +96,19 @@ private Connection conn;
 
 	@Override
 	public Author retrive(String email) {
-		AddressDAO addressDao = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Author author = null;
 		
 		try {
-			addressDao = DAOFactory.getAddressDAO();
 			ps = conn.prepareStatement("SELECT * FROM Author WHERE email = ?");
 			
 			ps.setString(1, email);
 			
 			rs = ps.executeQuery();
 			
-			while(rs.next()) {
-				Address addr = addressDao.retrive(rs.getInt("address_id"));
-				
-				author = new Author(rs.getString("author_name"), rs.getInt("age"), rs.getString("email"), addr);
+			while(rs.next()) {				
+				author = instantiateAuthor(rs);
 			}
 			
 			return author;
@@ -175,7 +195,6 @@ private Connection conn;
 
 	@Override
 	public List<Author> retrieveAllAuthorsBook(String bookTitle) {
-		AddressDAO addrdao = DAOFactory.getAddressDAO();
 		List<Author> authors = new ArrayList<Author>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -188,10 +207,8 @@ private Connection conn;
 			
 			rs = ps.executeQuery();
 			
-			while(rs.next()) {
-				Address addr = addrdao.retrive(rs.getInt("address_id"));
-				
-				authors.add(new Author(rs.getString("author_name"), rs.getInt("age"), rs.getString("email"), addr));
+			while(rs.next()) {				
+				authors.add(instantiateAuthor(rs));
 			}
 		}
 		catch(SQLException e) {
