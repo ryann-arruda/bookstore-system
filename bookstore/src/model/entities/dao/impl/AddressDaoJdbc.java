@@ -102,9 +102,36 @@ public class AddressDaoJdbc implements AddressDAO{
 	}
 
 	@Override
-	public boolean update(Address address) {
-		// TODO Auto-generated method stub
-		return false;
+	public int update(Address address, String zipCode) {
+		PreparedStatement ps = null;
+		int addressId = -1;
+		
+		try {
+			addressId = retrieveAddressId(zipCode);
+			
+			if(addressId != -1) {
+				ps = conn.prepareStatement("UPDATE Address SET thoroughfare=?, neighborhood=?, complement=?, house_number=?, zip_code=?"+
+											"WHERE address_id = ?");
+				
+				ps.setString(1, address.getThoroughfare());
+				ps.setString(2, address.getNeighborhood());
+				ps.setString(3, address.getComplement());
+				ps.setInt(4, address.getNumber());
+				ps.setString(5, address.getZipCode());
+				ps.setInt(6, addressId);
+				
+				ps.executeUpdate();
+			}	
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		return addressId;
 	}
 
 	@Override

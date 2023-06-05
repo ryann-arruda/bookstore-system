@@ -8,7 +8,7 @@ public interface AuthorDAO {
 	int insert(Author author);
 	Author retrive(String email);
 	boolean deleteById(int id);
-	boolean update(Author author);
+	boolean update(Author author, String email);
 	List<Author> retrieveAllAuthorsBook(String bookTitle);
 	int retrieveAuthorId(String email);
 }

@@ -129,8 +129,47 @@ private Connection conn;
 	}
 
 	@Override
-	public boolean update(Author author) {
-		// TODO Auto-generated method stub
+	public boolean update(Author author, String email) {
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			
+			int authorId =  retrieveAuthorId(email);
+			 
+			if(authorId != -1) {
+				
+				addressDao = DAOFactory.getAddressDAO();
+				
+				int addressId = addressDao.update(author.getAddress(), author.getAddress().getZipCode());
+				
+				
+				ps = conn.prepareStatement("UPDATE Author SET author_name=?, age=?, email=?, address_id=? "+
+											"WHERE email= ?");
+				
+				ps.setString(1, author.getName());
+				ps.setInt(2, author.getAge());
+				ps.setString(3, author.getEmail());
+				ps.setInt(4, addressId);
+				ps.setString(5, email);
+				
+				rowsAffected = ps.executeUpdate();
+			}
+		}
+			
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
