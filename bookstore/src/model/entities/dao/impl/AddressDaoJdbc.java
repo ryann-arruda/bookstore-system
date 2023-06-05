@@ -97,7 +97,29 @@ public class AddressDaoJdbc implements AddressDAO{
 
 	@Override
 	public boolean deleteById(int id) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			ps =  conn.prepareStatement("DELETE FROM Address WHERE address_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rowsAffected = ps.executeUpdate();
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException("Não é possível deletar o endereço! Existem indivíduos com vínculo nesse endereço");
+		}
+		
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if (rowsAffected != -1) {
+			return true;
+		}
+		
 		return false;
 	}
 
