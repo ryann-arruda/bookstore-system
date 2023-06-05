@@ -6,6 +6,10 @@ import java.util.List;
 public class Author extends Person{
 	private List<Book> books;
 	
+	public Author() {
+		super();
+	}
+	
 	public Author(String name, int age, String email, Address address) {
 		super(name, age, email, address);
 		this.books = new ArrayList<>();
