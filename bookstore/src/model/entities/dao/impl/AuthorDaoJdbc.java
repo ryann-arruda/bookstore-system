@@ -71,9 +71,35 @@ private Connection conn;
 	}
 
 	@Override
-	public Author retrive(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public Author retrive(String email) {
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Author author = null;
+		
+		try {
+			addressDao = DAOFactory.getAddressDAO();
+			ps = conn.prepareStatement("SELECT * FROM Author WHERE email = ?");
+			
+			ps.setString(1, email);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Address addr = addressDao.retrive(rs.getInt("address_id"));
+				
+				author = new Author(rs.getString("author_name"), rs.getInt("age"), rs.getString("email"), addr);
+			}
+			
+			return author;
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
 	}
 
 	@Override
