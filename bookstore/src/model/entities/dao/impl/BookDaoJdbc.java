@@ -149,18 +149,31 @@ public class BookDaoJdbc implements BookDAO{
 		int rowsAffected = -1;
 		
 		try {
-			ps = conn.prepareStatement("DELETE FROM Book WHERE book_id = ?");
+			int amountBooks = retrieveAmountBooks(id);
 			
-			ps.setInt(1, id);
-			
-			rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				rowsAffected = -1;
-				
-				ps = conn.prepareStatement("DELETE FROM Book_Author WHERE book_id = ?");
+			if(amountBooks == 1) {
+				ps = conn.prepareStatement("DELETE FROM Book WHERE book_id = ?");
 				
 				ps.setInt(1, id);
+				
+				rowsAffected = ps.executeUpdate();
+				
+				if(rowsAffected > 0) {
+					rowsAffected = -1;
+					
+					ps = conn.prepareStatement("DELETE FROM Book_Author WHERE book_id = ?");
+					
+					ps.setInt(1, id);
+					
+					rowsAffected = ps.executeUpdate();
+				}
+			}
+			
+			else {
+				ps = conn.prepareStatement("UPDATE Book SET amount_books = ? WHERE book_id = ?");
+				
+				ps.setInt(1, amountBooks - 1);
+				ps.setInt(2, id);
 				
 				rowsAffected = ps.executeUpdate();
 			}
@@ -364,6 +377,34 @@ public class BookDaoJdbc implements BookDAO{
 		}
 		
 		return amountBooks;
+	}
+
+	@Override
+	public int retrieveAmountBooks(int id) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int amountBooks = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT amount_books FROM Book WHERE book_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				amountBooks = rs.getInt(1);
+			}
+			
+			return amountBooks;
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
 	}
 	
 }
