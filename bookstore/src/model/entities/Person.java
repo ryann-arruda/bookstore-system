@@ -7,6 +7,10 @@ public class Person {
 	
 	private Address address;
 	
+	public Person() {
+		
+	}
+	
 	public Person(String name, int age, String email, Address address) {
 		this.name = name;
 		this.age = age;
