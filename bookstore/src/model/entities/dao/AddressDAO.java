@@ -7,4 +7,5 @@ public interface AddressDAO {
 	Address retrive(int address_id);
 	boolean deleteById(int id);
 	boolean update(Address address);
+	int retrieveAddressId(String zipCode);
 }
