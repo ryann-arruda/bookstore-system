@@ -17,6 +17,18 @@ public class AddressDaoJdbc implements AddressDAO{
 	public AddressDaoJdbc(Connection conn) {
 		this.conn = conn;
 	}
+	
+	private Address instantiateAddress(ResultSet rs) throws SQLException{
+		Address address = new Address();
+		
+		address.setThoroughfare(rs.getString("thoroughfare"));
+		address.setNeighborhood(rs.getString("neighborhood"));
+		address.setComplement(rs.getString("complement"));
+		address.setNumber(rs.getInt("house_number"));
+		address.setZipCode(rs.getString("zip_code"));
+		
+		return address;
+	}
 
 	@Override
 	public int insert(Address address) {
@@ -65,9 +77,7 @@ public class AddressDaoJdbc implements AddressDAO{
 		ResultSet rs = null;
 		Address address = null;
 		
-		try {
-			address = new Address();
-			
+		try {			
 			ps = conn.prepareStatement("SELECT * FROM Address WHERE address_id = ?");
 			
 			ps.setInt(1, address_id);
@@ -75,11 +85,7 @@ public class AddressDaoJdbc implements AddressDAO{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				address.setThoroughfare(rs.getString("thoroughfare"));
-				address.setNeighborhood(rs.getString("neighborhood"));
-				address.setComplement(rs.getString("complement"));
-				address.setNumber(rs.getInt("house_number"));
-				address.setZipCode(rs.getString("zip_code"));
+				address = instantiateAddress(rs);
 			}
 		}
 		
