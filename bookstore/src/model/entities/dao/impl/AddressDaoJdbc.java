@@ -25,22 +25,26 @@ public class AddressDaoJdbc implements AddressDAO{
 		int addressId = -1;
 		
 		try {
-			ps = conn.prepareStatement("INSERT INTO address (thoroughfare, neighborhood, complement, house_number, zip_code) " +
-										"VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			addressId = retrieveAddressId(address.getZipCode());
 			
-			ps.setString(1, address.getThoroughfare());
-			ps.setString(2, address.getNeighborhood());
-			ps.setString(3, address.getComplement());
-			ps.setInt(4, address.getNumber());
-			ps.setString(5, address.getZipCode());
-			
-			rowsAffected = ps.executeUpdate();
-			
-			if(rowsAffected > 0) {
-				ResultSet rs = ps.getGeneratedKeys();
+			if(addressId == -1) {
+				ps = conn.prepareStatement("INSERT INTO address (thoroughfare, neighborhood, complement, house_number, zip_code) " +
+											"VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 				
-				while(rs.next()) {
-					addressId = rs.getInt(1);
+				ps.setString(1, address.getThoroughfare());
+				ps.setString(2, address.getNeighborhood());
+				ps.setString(3, address.getComplement());
+				ps.setInt(4, address.getNumber());
+				ps.setString(5, address.getZipCode());
+				
+				rowsAffected = ps.executeUpdate();
+				
+				if(rowsAffected > 0) {
+					ResultSet rs = ps.getGeneratedKeys();
+					
+					while(rs.next()) {
+						addressId = rs.getInt(1);
+					}
 				}
 			}
 		}
@@ -101,6 +105,34 @@ public class AddressDaoJdbc implements AddressDAO{
 	public boolean update(Address address) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int retrieveAddressId(String zipCode) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int addressId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT address_id FROM Address WHERE zip_code = ?");
+			
+			ps.setString(1, zipCode);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				addressId = rs.getInt(1);
+			}
+			
+			return addressId;
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
 	}
 
 }
