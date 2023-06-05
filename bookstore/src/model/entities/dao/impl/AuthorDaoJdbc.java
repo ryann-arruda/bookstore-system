@@ -35,7 +35,7 @@ private Connection conn;
 		try {
 			authorId = retrieveAuthorId(author.getEmail()); 
 			
-			if(authorId != -1) {
+			if(authorId == -1) {
 				ps = conn.prepareStatement("INSERT INTO Author(author_name, age, email, address_id) VALUES (?,?,?,?)", 
 											Statement.RETURN_GENERATED_KEYS);
 				
