@@ -2,10 +2,12 @@ package model.entities.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import db.Database;
 import db.DatabaseException;
+import model.entities.Address;
 import model.entities.Client;
 import model.entities.dao.AddressDAO;
 import model.entities.dao.ClientDAO;
@@ -57,7 +59,45 @@ public class ClientDaoJdbc implements ClientDAO{
 
 	@Override
 	public Client retrieve(String name) {
-		return null;
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Client client = null;
+		
+		try {
+			client = new Client();
+			addressDao = DAOFactory.getAddressDAO();
+			ps =  conn.prepareStatement("SELECT * FROM Client_t WHERE client_t_name = ?");
+			
+			ps.setString(1, name);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				int addressId = rs.getInt("address_id");
+				
+				Address addr = addressDao.retrive(addressId);
+				
+				client.setName(rs.getString("client_t_name"));
+				client.setAge(rs.getInt("age"));
+				client.setEmail(rs.getString("email"));
+				client.setIsOnePiece(rs.getBoolean("isOnePiece"));
+				client.setTeam(rs.getString("team"));
+				client.setPassword(rs.getString("client_t_password"));
+				client.setAddress(addr);
+			}
+			
+			return client;
+		}
+		
+		catch(SQLException e ) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
 	}
 
 	@Override
