@@ -17,7 +17,7 @@ import model.entities.dao.ManagerDAO;
 public class ManagerDaoJdbc implements ManagerDAO{
 	private Connection conn;
 	
-	public ManagerDaoJdbc(Connection coon) {
+	public ManagerDaoJdbc(Connection conn) {
 		this.conn = conn;
 	}
 
@@ -41,10 +41,7 @@ public class ManagerDaoJdbc implements ManagerDAO{
 				
 				manager = new Manager(rs.getString("manager_name"), rs.getInt("age"), rs.getString("email"), addr, 
 									  rs.getString("manager_password"));
-			}
-			
-			return manager;
-			
+			}			
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -53,6 +50,8 @@ public class ManagerDaoJdbc implements ManagerDAO{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
+		
+		return manager;
 	}
 
 	@Override
