@@ -94,4 +94,9 @@ public class Employee {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return getName() + " (" + getAge() + " years old) - " + getEmail();
+	}
 }
