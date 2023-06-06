@@ -164,6 +164,9 @@ private Connection conn;
 				
 				int addressId = addressDao.update(author.getAddress(), author.getAddress().getZipCode());
 				
+				if(addressId == -1) {
+					addressId = addressDao.insert(author.getAddress());
+				}
 				
 				ps = conn.prepareStatement("UPDATE Author SET author_name=?, age=?, email=?, address_id=? "+
 											"WHERE email= ?");
