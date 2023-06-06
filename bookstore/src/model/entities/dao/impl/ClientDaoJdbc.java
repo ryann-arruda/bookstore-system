@@ -106,7 +106,51 @@ public class ClientDaoJdbc implements ClientDAO{
 	}
 
 	@Override
-	public boolean update(Client client) {
+	public boolean update(Client client, String email) {
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			addressDao = DAOFactory.getAddressDAO();
+			int clientId = retrieveClientId(email);
+			
+			if(clientId != -1) {
+				int addressId = addressDao.update(client.getAddress(), client.getAddress().getZipCode());
+				
+				if(addressId == -1) {
+					addressId = addressDao.insert(client.getAddress());
+				}
+				
+				ps = conn.prepareStatement("UPDATE Client_t SET client_t_name = ?, age = ?, email = ?, isOnePiece = ?, "+
+										   "team = ?, client_t_password = ?, address_id = ? WHERE email = ?");
+				
+				ps.setString(1, client.getName());
+				ps.setInt(2, client.getAge());
+				ps.setString(3, client.getEmail());
+				ps.setBoolean(4, client.getIsOnePiece());
+				ps.setString(5, client.getTeam());
+				ps.setString(6, client.getPassword());
+				ps.setInt(7, addressId);
+				ps.setString(8, email);
+				
+				rowsAffected = ps.executeUpdate();
+				
+			}
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
