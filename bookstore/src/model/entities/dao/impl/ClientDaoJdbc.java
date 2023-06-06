@@ -109,4 +109,36 @@ public class ClientDaoJdbc implements ClientDAO{
 	public boolean update(Client client) {
 		return false;
 	}
+
+	@Override
+	public int retrieveClientId(String email) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int clientId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT client_t_id FROM Client_t WHERE email = ? ");
+			
+			ps.setString(1, email);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				clientId = rs.getInt("client_t_id");
+			}
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return clientId;
+	}
+	
+	
 }
