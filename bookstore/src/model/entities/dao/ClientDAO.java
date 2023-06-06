@@ -8,4 +8,5 @@ public interface ClientDAO {
 	Client retrieve(String name);
 	boolean deleteById(int id);
 	boolean update(Client client);
+	int retrieveClientId(String email);
 }
