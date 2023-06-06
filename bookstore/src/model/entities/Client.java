@@ -5,6 +5,10 @@ public class Client extends Person{
 	private Boolean isOnePiece;
 	private String team;
 	
+	public Client() {
+		
+	}
+	
 	public Client(Client client) {
 		super(client.getName(), client.getAge(), client.getEmail(), client.getAddress());
 		this.password = client.getPassword();
