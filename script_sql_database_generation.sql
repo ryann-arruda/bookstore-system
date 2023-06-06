@@ -73,10 +73,12 @@ CREATE TABLE Seller(
     age					INTEGER NOT NULL,
     email 				VARCHAR(100) NOT NULL,
     seller_password		VARCHAR(50) NOT NULL,
+    address_id 			INT NOT NULL,
     
 	CONSTRAINT seller_age CHECK (age > 0),
     
-    PRIMARY KEY (seller_id)
+    PRIMARY KEY (seller_id),
+    FOREIGN KEY (address_id) REFERENCES Address(address_id)
 );
 
 CREATE TABLE Manager(
@@ -85,10 +87,12 @@ CREATE TABLE Manager(
     age					INTEGER NOT NULL,
     email 				VARCHAR(100) NOT NULL,
     manager_password	VARCHAR(50) NOT NULL,
+    address_id 			INT NOT NULL,
     
 	CONSTRAINT manager_age CHECK (age > 0),
     
-    PRIMARY KEY (manager_id)
+    PRIMARY KEY (manager_id),
+    FOREIGN KEY (address_id) REFERENCES Address(address_id)
 );
 
 CREATE TABLE Order_t(
