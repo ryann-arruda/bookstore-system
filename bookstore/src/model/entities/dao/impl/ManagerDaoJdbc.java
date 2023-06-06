@@ -7,11 +7,6 @@ import java.sql.SQLException;
 
 import db.Database;
 import db.DatabaseException;
-
-import model.entities.Address;
-import model.entities.Manager;
-import model.entities.dao.AddressDAO;
-import model.entities.dao.DAOFactory;
 import model.entities.dao.ManagerDAO;
 
 public class ManagerDaoJdbc implements ManagerDAO{
@@ -22,37 +17,9 @@ public class ManagerDaoJdbc implements ManagerDAO{
 	}
 
 	@Override
-	public Manager retrieve(String name) {
-		AddressDAO addressDao = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Manager manager = null;
-		
-		try {
-			addressDao = DAOFactory.getAddressDAO();
-			ps = conn.prepareStatement("SELECT * FROM Manager WHERE manager_name = ?");
-			
-			ps.setString(1, name);
-			
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				Address addr = addressDao.retrive(rs.getInt("address_id"));
-				
-				manager = new Manager(rs.getString("manager_name"), rs.getInt("age"), rs.getString("email"), addr, 
-									  rs.getString("manager_password"));
-			}
-			
-			return manager;
-			
-		}
-		catch(SQLException e) {
-			throw new DatabaseException(e.getMessage());
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
+	public ManagerDAO retrieve(String name) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -87,5 +54,34 @@ public class ManagerDaoJdbc implements ManagerDAO{
 	public boolean update(ManagerDAO manager) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int retrieveManagerId(String email) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int managerId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT manager_id FROM Manager WHERE email = ?");
+			
+			ps.setString(1, email);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				managerId = rs.getInt(1);
+			}
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		return managerId;
 	}
 }
