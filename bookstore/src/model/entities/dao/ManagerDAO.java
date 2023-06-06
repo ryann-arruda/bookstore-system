@@ -1,8 +1,10 @@
 package model.entities.dao;
 
+import model.entities.Manager;
+
 public interface ManagerDAO {
 	
-	ManagerDAO retrieve(String name);
+	Manager retrieve(String name);
 	boolean deleteById(int id);
 	boolean update(ManagerDAO manager);
 	int retrieveManagerId(String email);
