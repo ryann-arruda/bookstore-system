@@ -200,17 +200,19 @@ public class BookDaoJdbc implements BookDAO{
 		try {
 			int bookId = retrieveBookId(currentTitle);
 			
-			ps = conn.prepareStatement("UPDATE Book SET title = ?, main_genre = ?, place_publication = ?, " + 
-									   "year_publication = ?, price = ? WHERE book_id = ?");
-			
-			ps.setString(1, book.getTitle());
-			ps.setString(2, book.getMainGenre());
-			ps.setString(3, book.getPlacePublication());
-			ps.setInt(4, book.getYearPublication());
-			ps.setFloat(5, book.getPrice());
-			ps.setInt(6, bookId);
-			
-			rowsAffected = ps.executeUpdate();
+			if(bookId != -1) {
+				ps = conn.prepareStatement("UPDATE Book SET title = ?, main_genre = ?, place_publication = ?, " + 
+						   "year_publication = ?, price = ? WHERE book_id = ?");
+
+				ps.setString(1, book.getTitle());
+				ps.setString(2, book.getMainGenre());
+				ps.setString(3, book.getPlacePublication());
+				ps.setInt(4, book.getYearPublication());
+				ps.setFloat(5, book.getPrice());
+				ps.setInt(6, bookId);
+				
+				rowsAffected = ps.executeUpdate();
+			}
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
