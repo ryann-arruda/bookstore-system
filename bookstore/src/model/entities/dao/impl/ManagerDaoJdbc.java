@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import db.Database;
 import db.DatabaseException;
-
 import model.entities.Address;
 import model.entities.Manager;
 import model.entities.dao.AddressDAO;
@@ -86,5 +85,34 @@ public class ManagerDaoJdbc implements ManagerDAO{
 	public boolean update(ManagerDAO manager) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public int retrieveManagerId(String email) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int managerId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT manager_id FROM Manager WHERE email = ?");
+			
+			ps.setString(1, email);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				managerId = rs.getInt(1);
+			}
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		return managerId;
 	}
 }
