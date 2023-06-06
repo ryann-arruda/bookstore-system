@@ -115,7 +115,7 @@ public class AddressDaoJdbc implements AddressDAO{
 		}
 		
 		catch(SQLException e) {
-			throw new DatabaseException("NÃ£o Ã© possÃ­vel deletar o endereÃ§o! Existem indivÃ­duos com vÃ­nculo nesse endereÃ§o");
+			throw new DatabaseException("Não é possível deletar o endereço! Existem indivíduos com vínculo nesse endereço.");
 		}
 		
 		finally {
@@ -178,8 +178,6 @@ public class AddressDaoJdbc implements AddressDAO{
 			while(rs.next()) {
 				addressId = rs.getInt(1);
 			}
-			
-			return addressId;
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -188,6 +186,8 @@ public class AddressDaoJdbc implements AddressDAO{
 			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
+		
+		return addressId;
 	}
 
 }
