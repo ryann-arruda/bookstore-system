@@ -29,6 +29,14 @@ public class Payment {
 		this.client = client;
 	}
 	
+	public Payment(float totalAmount,PaymentStatus status ,PaymentType paymentType, Date paymentTime, Client client) {
+		this.totalAmount = totalAmount;
+		this.status = status;
+		this.paymentType = paymentType;
+		this.paymentTime = paymentTime;
+		this.client = client;
+	}
+	
 	public float getTotalAmount() {
 		return totalAmount;
 	}
