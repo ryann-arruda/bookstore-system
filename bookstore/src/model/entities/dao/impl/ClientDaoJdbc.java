@@ -102,6 +102,7 @@ public class ClientDaoJdbc implements ClientDAO{
 
 	@Override
 	public boolean deleteById(int id) {
+		// TODO 
 		return false;
 	}
 
