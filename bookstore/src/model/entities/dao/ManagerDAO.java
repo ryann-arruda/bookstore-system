@@ -5,5 +5,6 @@ import model.entities.Manager;
 public interface ManagerDAO {
 	
 	Manager retrieve(String name);
-	boolean update(ManagerDAO manager);
+	boolean update(Manager manager, String email);
+	int retrieveManagerId(String email);
 }
