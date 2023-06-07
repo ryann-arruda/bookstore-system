@@ -6,6 +6,7 @@ import model.entities.dao.impl.AuthorDaoJdbc;
 import model.entities.dao.impl.BookDaoJdbc;
 import model.entities.dao.impl.ClientDaoJdbc;
 import model.entities.dao.impl.ManagerDaoJdbc;
+import model.entities.dao.impl.PaymentDaoJdbc;
 
 public class DAOFactory {
 	
@@ -27,5 +28,9 @@ public class DAOFactory {
 	
 	public static ManagerDAO getManagerDAO() {
 		return new ManagerDaoJdbc(Database.getConnection());
+	}
+	
+	public static PaymentDAO getPaymentDAO() {
+		return new PaymentDaoJdbc(Database.getConnection());
 	}
 }
