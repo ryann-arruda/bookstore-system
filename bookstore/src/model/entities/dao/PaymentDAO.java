@@ -7,4 +7,5 @@ public interface PaymentDAO {
 	Payment retrieve(int idClient);
 	boolean deleteById(int id);
 	boolean update(Payment payment);
+	int retrievePaymentId(int clientId);
 }
