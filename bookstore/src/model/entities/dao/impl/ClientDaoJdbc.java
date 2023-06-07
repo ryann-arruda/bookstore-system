@@ -99,6 +99,49 @@ public class ClientDaoJdbc implements ClientDAO{
 			Database.closeStatement(ps);
 		}
 	}
+	
+	@Override
+	public Client retrieve(int id) {
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Client client = null;
+		
+		try {
+			client = new Client();
+			addressDao = DAOFactory.getAddressDAO();
+			ps =  conn.prepareStatement("SELECT * FROM Client_t WHERE client_t_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				int addressId = rs.getInt("address_id");
+				
+				Address addr = addressDao.retrive(addressId);
+				
+				client.setName(rs.getString("client_t_name"));
+				client.setAge(rs.getInt("age"));
+				client.setEmail(rs.getString("email"));
+				client.setIsOnePiece(rs.getBoolean("isOnePiece"));
+				client.setTeam(rs.getString("team"));
+				client.setPassword(rs.getString("client_t_password"));
+				client.setAddress(addr);
+			}
+			
+			return client;
+		}
+		
+		catch(SQLException e ) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+	}
 
 	@Override
 	public boolean deleteById(int id) {
