@@ -124,7 +124,7 @@ public class ClientDaoJdbc implements ClientDAO{
 				}
 				
 				ps = conn.prepareStatement("UPDATE Client_t SET client_t_name = ?, age = ?, email = ?, isOnePiece = ?, "+
-										   "team = ?, client_t_password = ?, address_id = ? WHERE email = ?");
+										   "team = ?, client_t_password = ?, address_id = ? WHERE client_t_id = ?");
 				
 				ps.setString(1, client.getName());
 				ps.setInt(2, client.getAge());
@@ -133,7 +133,7 @@ public class ClientDaoJdbc implements ClientDAO{
 				ps.setString(5, client.getTeam());
 				ps.setString(6, client.getPassword());
 				ps.setInt(7, addressId);
-				ps.setString(8, email);
+				ps.setInt(8, clientId);
 				
 				rowsAffected = ps.executeUpdate();
 				
