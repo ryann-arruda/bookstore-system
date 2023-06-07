@@ -53,33 +53,6 @@ public class ManagerDaoJdbc implements ManagerDAO{
 		return manager;
 	}
 
-	@Override
-	public boolean deleteById(int id) {
-		PreparedStatement ps = null;
-		int rowsAffected = -1;
-		
-		try {
-			ps = conn.prepareStatement("DELETE FROM Manager WHERE manager_id = ?");
-			
-			ps.setInt(1, id);
-			
-			rowsAffected = ps.executeUpdate();
-		}
-		
-		catch(SQLException e ) {
-			throw new DatabaseException(e.getMessage());
-		}
-		
-		finally {
-			Database.closeStatement(ps);
-		}
-		
-		if (rowsAffected != -1) {
-			return true;
-		}
-		
-		return false;
-	}
 
 	@Override
 	public boolean update(ManagerDAO manager) {
@@ -87,32 +60,4 @@ public class ManagerDaoJdbc implements ManagerDAO{
 		return false;
 	}
 
-	@Override
-	public int retrieveManagerId(String email) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		int managerId = -1;
-		
-		try {
-			ps = conn.prepareStatement("SELECT manager_id FROM Manager WHERE email = ?");
-			
-			ps.setString(1, email);
-			
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {
-				managerId = rs.getInt(1);
-			}
-		}
-		
-		catch(SQLException e) {
-			throw new DatabaseException(e.getMessage());
-		}
-		
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-		return managerId;
-	}
 }
