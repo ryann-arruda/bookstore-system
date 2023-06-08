@@ -13,4 +13,5 @@ public interface SellerDAO {
 	boolean update(Seller seller);
 	List<Seller> listAll();
 	Client listOneClient();
+	int retrieveSellerId(String email);
 }
