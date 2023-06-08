@@ -10,7 +10,7 @@ public interface SellerDAO {
 	boolean insert(Seller seller);
 	Seller retrieve(String name);
 	boolean deleteById(int id);
-	boolean update(Seller seller);
+	boolean update(Seller seller, String email);
 	List<Seller> listAll();
 	Client listOneClient();
 	int retrieveSellerId(String email);
