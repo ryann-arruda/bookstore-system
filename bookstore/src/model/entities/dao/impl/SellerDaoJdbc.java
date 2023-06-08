@@ -119,8 +119,48 @@ public class SellerDaoJdbc implements SellerDAO{
 	}
 
 	@Override
-	public boolean update(Seller seller) {
-		// TODO Auto-generated method stub
+	public boolean update(Seller seller, String email) {
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			addressDao = DAOFactory.getAddressDAO();
+			int sellerId = retrieveSellerId(email);
+			
+			if(sellerId != - 1) {
+				int addressId = addressDao.update(seller.getAddress(), seller.getAddress().getZipCode());
+				
+				if(addressId == -1) {
+					addressId = addressDao.insert(seller.getAddress());
+				}
+				
+				ps = conn.prepareStatement("UPDATE Seller SET seller_name = ?, age = ?, email = ?, seller_password = ?, "+
+										   "address_id = ? WHERE seller_id = ?");
+				
+				ps.setString(1, seller.getName());
+				ps.setInt(2, seller.getAge());
+				ps.setString(3, seller.getEmail());
+				ps.setString(4, seller.getPassword());
+				ps.setInt(5, addressId);
+				ps.setInt(6, sellerId);
+				
+				rowsAffected = ps.executeUpdate();
+			}
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected > 0) {
+			return true;
+		}
+		
 		return false;
 	}
 
