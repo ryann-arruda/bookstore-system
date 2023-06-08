@@ -136,4 +136,35 @@ public class SellerDaoJdbc implements SellerDAO{
 		return null;
 	}
 
+	@Override
+	public int retrieveSellerId(String email) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int sellerId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT * FROM Seller WHERE email = ?");
+			
+			ps.setString(1, email);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				sellerId = rs.getInt(1);
+			}
+		}
+		
+		catch(SQLException e ) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		
+		return sellerId;
+	}
+
 }
