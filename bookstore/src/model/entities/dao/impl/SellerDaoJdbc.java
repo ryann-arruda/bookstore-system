@@ -2,13 +2,18 @@ package model.entities.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import db.Database;
 import db.DatabaseException;
+import model.entities.Address;
 import model.entities.Client;
+import model.entities.Manager;
 import model.entities.Seller;
+import model.entities.dao.AddressDAO;
+import model.entities.dao.DAOFactory;
 import model.entities.dao.SellerDAO;
 
 public class SellerDaoJdbc implements SellerDAO{
@@ -51,8 +56,38 @@ public class SellerDaoJdbc implements SellerDAO{
 
 	@Override
 	public Seller retrieve(String name) {
-		// TODO Auto-generated method stub
-		return null;
+		AddressDAO addressDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Seller seller = null;
+		
+		try {
+			addressDao = DAOFactory.getAddressDAO();
+			
+			ps = conn.prepareStatement("SELECT * FROM Seller WHERE seller_name = ?");
+			
+			ps.setString(1, name);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Address addr = addressDao.retrive(rs.getInt("address_id"));
+				
+				seller = new Seller(rs.getString("seller_name"), rs.getInt("age"), rs.getString("email"), addr, 
+						  rs.getString("seller_password"));
+				
+			}
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return seller;
 	}
 
 	@Override
