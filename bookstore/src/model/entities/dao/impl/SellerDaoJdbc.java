@@ -4,15 +4,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.Database;
 import db.DatabaseException;
 import model.entities.Address;
+import model.entities.Book;
 import model.entities.Client;
 import model.entities.Manager;
 import model.entities.Seller;
 import model.entities.dao.AddressDAO;
+import model.entities.dao.AuthorDAO;
 import model.entities.dao.DAOFactory;
 import model.entities.dao.SellerDAO;
 
@@ -166,8 +170,40 @@ public class SellerDaoJdbc implements SellerDAO{
 
 	@Override
 	public List<Seller> listAll() {
-		// TODO Auto-generated method stub
-		return null;
+		AddressDAO addressDao = DAOFactory.getAddressDAO();
+		List<Seller> sellers = new ArrayList<>();
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			
+			st = conn.createStatement();
+			
+			rs = st.executeQuery("SELECT * FROM Seller");
+			
+			while(rs.next()) {
+				
+				Address addr = addressDao.retrive(rs.getInt("address_id"));
+				
+				Seller seller = new Seller(rs.getString("seller_name"), rs.getInt("age"), rs.getString("email"), addr, 
+						  rs.getString("seller_password"));
+				
+				sellers.add(seller);
+				
+			}
+			
+		}
+		
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(st);
+		}
+		
+		return sellers;
 	}
 
 	@Override
