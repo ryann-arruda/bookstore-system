@@ -12,6 +12,6 @@ public interface SellerDAO {
 	boolean deleteById(int id);
 	boolean update(Seller seller, String email);
 	List<Seller> listAll();
-	Client listOneClient();
+	List<Client> listAllClients();
 	int retrieveSellerId(String email);
 }
