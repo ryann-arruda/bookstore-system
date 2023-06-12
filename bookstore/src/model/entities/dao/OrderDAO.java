@@ -10,6 +10,6 @@ public interface OrderDAO {
 	Order retrive(int idClient);
 	boolean deleteById(int id);
 	boolean udapte(Order order);
-	List<Order> listAll(int idClient);
+	List<Order> listAllOrders(int idClient);
 	Order listOneOrder();
 }
