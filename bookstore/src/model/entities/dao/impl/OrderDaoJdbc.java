@@ -89,10 +89,5 @@ public class OrderDaoJdbc implements OrderDAO{
 		return orders;
 	}
 
-	@Override
-	public Order listOneOrder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
