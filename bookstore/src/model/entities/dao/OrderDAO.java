@@ -11,5 +11,4 @@ public interface OrderDAO {
 	boolean deleteById(int id);
 	boolean udapte(Order order);
 	List<Order> listAllOrders(int idClient);
-	Order listOneOrder();
 }
