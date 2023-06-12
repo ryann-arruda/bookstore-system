@@ -207,9 +207,39 @@ public class SellerDaoJdbc implements SellerDAO{
 	}
 
 	@Override
-	public Client listOneClient() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Client> listAllClients() {
+		AddressDAO addressDao = DAOFactory.getAddressDAO();
+		List<Client> clients = new ArrayList<>();
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.createStatement();
+			
+			rs = st.executeQuery("SELECT * FROM Client_t");
+			
+			while(rs.next()) {
+				Address addr = addressDao.retrive(rs.getInt("address_id"));
+				
+				Client client = new Client(rs.getString("client_t_name"), rs.getInt("age"), rs.getString("email"),
+										   rs.getBoolean("isOnePiece"),rs.getString("team") ,rs.getString("client_t_password"), addr);
+				
+				clients.add(client);
+				
+			}
+			
+		}
+		
+		catch(SQLException e ) {
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(st);
+		}
+		
+		return clients;
 	}
 
 	@Override
