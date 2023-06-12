@@ -145,8 +145,32 @@ public class ClientDaoJdbc implements ClientDAO{
 
 	@Override
 	public boolean deleteById(int id) {
-		// TODO 
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			ps = conn.prepareStatement("DELETE FROM Client_t WHERE client_t_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rowsAffected = ps.executeUpdate();
+			
+		}
+		
+		catch(SQLException e){
+			throw new DatabaseException("Não é possível deletar o cliente! Ele é chave em outras tabelas.");
+		}
+		
+		finally{
+			Database.closeStatement(ps);
+		}
+		
+		if (rowsAffected != -1) {
+			return true;
+		}
+		
 		return false;
+
 	}
 
 	@Override
