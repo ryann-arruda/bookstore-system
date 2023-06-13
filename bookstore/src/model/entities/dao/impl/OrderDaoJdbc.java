@@ -27,7 +27,35 @@ public class OrderDaoJdbc implements OrderDAO{
 
 	@Override
 	public boolean insert(Order order) {
-		// TODO Auto-generated method stub
+		ClientDAO clientDao = null;
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			clientDao = DAOFactory.getClientDAO();
+			
+			int clientId = clientDao.retrieveClientId(order.getClient().getEmail());
+			
+			if (clientId != -1) {
+				ps = conn.prepareStatement("INSERT INTO Order_t (total_amount, client_t_id) VALUES (?,?)");
+				
+				ps.setFloat(1, order.getTotalAmount());
+				ps.setInt(2, clientId);
+				
+				rowsAffected = ps.executeUpdate();
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeStatement(ps);
+		}
+		
+		if(rowsAffected != -1) {
+			return true;
+		}
+		
 		return false;
 	}
 
