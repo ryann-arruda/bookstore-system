@@ -139,12 +139,6 @@ public class OrderDaoJdbc implements OrderDAO{
 	}
 
 	@Override
-	public boolean udapte(Order order) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public List<Order> listAllOrders(int idClient) {
 		ClientDAO clientDao = DAOFactory.getClientDAO();
 		List<Order> orders = new ArrayList<>();
