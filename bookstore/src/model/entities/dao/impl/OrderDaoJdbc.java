@@ -10,9 +10,10 @@ import java.util.List;
 
 import db.Database;
 import db.DatabaseException;
+import model.entities.Book;
 import model.entities.Client;
 import model.entities.Order;
-import model.entities.dao.AddressDAO;
+import model.entities.dao.BookDAO;
 import model.entities.dao.ClientDAO;
 import model.entities.dao.DAOFactory;
 import model.entities.dao.OrderDAO;
@@ -28,7 +29,9 @@ public class OrderDaoJdbc implements OrderDAO{
 	@Override
 	public boolean insert(Order order) {
 		ClientDAO clientDao = null;
+		BookDAO bookDao = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 		int rowsAffected = -1;
 		
 		try {
@@ -37,18 +40,40 @@ public class OrderDaoJdbc implements OrderDAO{
 			int clientId = clientDao.retrieveClientId(order.getClient().getEmail());
 			
 			if (clientId != -1) {
-				ps = conn.prepareStatement("INSERT INTO Order_t (total_amount, client_t_id) VALUES (?,?)");
+				ps = conn.prepareStatement("INSERT INTO Order_t (total_amount, client_t_id) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);
 				
 				ps.setFloat(1, order.getTotalAmount());
 				ps.setInt(2, clientId);
 				
 				rowsAffected = ps.executeUpdate();
+				
+				if(rowsAffected > 0) {
+					int orderId = -1;
+					rs = ps.getGeneratedKeys();
+					
+					while(rs.next()) {
+						orderId = rs.getInt(1);
+					}
+					
+					bookDao = DAOFactory.getBookDAO();
+					
+					for(Book book: order.getItems()) {
+						int bookId = bookDao.retrieveBookId(book.getTitle());
+						
+						ps = conn.prepareStatement("INSERT INTO Order_Book (order_t_id, book_id) VALUES (?,?)");
+						ps.setInt(1, orderId);
+						ps.setInt(2, bookId);
+						
+						rowsAffected = ps.executeUpdate();
+					}
+				}
 			}
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
+			Database.closeResultSet(rs);
 			Database.closeStatement(ps);
 		}
 		
@@ -61,10 +86,23 @@ public class OrderDaoJdbc implements OrderDAO{
 
 	@Override
 	public Order retrive(int idClient) {
-		// TODO Auto-generated method stub
+		Statement st = null;
+
+		try {
+			st = conn.createStatement();
+			
+			
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeStatement(st);
+		}
 		return null;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public boolean deleteById(int id) {
 		PreparedStatement ps = null;
@@ -77,6 +115,12 @@ public class OrderDaoJdbc implements OrderDAO{
 			
 			rowsAffected = ps.executeUpdate();
 			
+			if(rowsAffected > 0) {
+				ps = conn.prepareStatement("DELETE FROM Order_Book WHERE order_t_id = ?");
+				ps.setInt(1, id);
+				
+				rowsAffected = ps.executeUpdate();
+			}
 		}
 		
 		catch(SQLException e){
@@ -91,8 +135,7 @@ public class OrderDaoJdbc implements OrderDAO{
 			return true;
 		}
 		
-		return false;
-		
+		return false;	
 	}
 
 	@Override
