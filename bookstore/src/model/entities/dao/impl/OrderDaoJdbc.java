@@ -39,8 +39,32 @@ public class OrderDaoJdbc implements OrderDAO{
 
 	@Override
 	public boolean deleteById(int id) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		int rowsAffected = -1;
+		
+		try {
+			ps = conn.prepareStatement("DELETE FROM Order_t WHERE order_t_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rowsAffected = ps.executeUpdate();
+			
+		}
+		
+		catch(SQLException e){
+			throw new DatabaseException(e.getMessage());
+		}
+		
+		finally{
+			Database.closeStatement(ps);
+		}
+		
+		if (rowsAffected != -1) {
+			return true;
+		}
+		
 		return false;
+		
 	}
 
 	@Override
