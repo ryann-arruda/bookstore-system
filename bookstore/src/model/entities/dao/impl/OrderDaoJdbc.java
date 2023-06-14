@@ -84,22 +84,49 @@ public class OrderDaoJdbc implements OrderDAO{
 		return false;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public Order retrive(int idClient) {
-		Statement st = null;
-
+		ClientDAO clientDao = null;
+		BookDAO bookDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Order order = null;
+		
 		try {
-			st = conn.createStatement();
+			clientDao = DAOFactory.getClientDAO();
+			bookDao = DAOFactory.getBookDAO();
 			
+			ps = conn.prepareStatement("SELECT * FROM Order_t WHERE client_t_id = ?");
+			ps.setInt(1, idClient);
 			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {				
+				Client client = clientDao.retrieve(idClient);
+				int orderId = rs.getInt("order_t_id");
+				
+				order = new Order(client);
+				
+				ps = conn.prepareStatement("SELECT book_id FROM Order_Book WHERE order_t_id = ?");
+				ps.setInt(1, orderId);
+				rs = ps.executeQuery();
+				
+				while(rs.next()) {
+					int bookId = rs.getInt("book_id");
+					
+					order.addNewItem((bookDao.retrieve(bookId)));
+				}
+			}
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
 		}
 		finally {
-			Database.closeStatement(st);
+			Database.closeStatement(ps);
 		}
-		return null;
+		
+		return order;
 	}
 
 	@SuppressWarnings("resource")
@@ -177,6 +204,4 @@ public class OrderDaoJdbc implements OrderDAO{
 		
 		return orders;
 	}
-
-
 }
