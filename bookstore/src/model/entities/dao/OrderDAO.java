@@ -8,7 +8,6 @@ import model.entities.enums.PaymentType;
 public interface OrderDAO {
 	
 	boolean insert(Order order, PaymentType paymentType);
-	Order retrive(int idClient);
 	boolean deleteById(int id);
-	List<Order> listAllOrders(int idClient);
+	List<Order> listAllOrdersClient(int idClient);
 }
