@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import db.Database;
 import db.DatabaseException;
@@ -70,14 +72,19 @@ public class PaymentDaoJdbc implements PaymentDAO{
 	}
 
 	@Override
-	public Payment retrieve(int idClient) {
+	public List<Payment> retrieveAllPaymentsClient(int idClient) {
 		ClientDAO clientDao = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Payment payment = null;
+		List<Payment> payments = null;
 		
 		try {
+			payments = new ArrayList<Payment>();
 			clientDao = DAOFactory.getClientDAO();
+			
+			Client client = clientDao.retrieve(idClient);
+			
 			ps = conn.prepareStatement("SELECT * FROM Payment WHERE client_t_id = ?");
 			
 			ps.setInt(1, idClient);
@@ -85,12 +92,13 @@ public class PaymentDaoJdbc implements PaymentDAO{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
-				Client client = clientDao.retrieve(idClient);
 				PaymentStatus paymentStatus = PaymentStatus.values()[rs.getInt("payment_status")];
 				PaymentType paymentType = PaymentType.values()[rs.getInt("payment_type")];
 				
 				payment = new Payment(rs.getFloat("total_amount"), paymentStatus, paymentType,
 									  new Date(rs.getTimestamp("payment_time").getTime()), client);
+				
+				payments.add(payment);
 			}
 		}
 		
@@ -103,52 +111,25 @@ public class PaymentDaoJdbc implements PaymentDAO{
 			Database.closeStatement(ps);
 		}
 		
-		return payment;
+		return payments;
 	}
 
 	@Override
-	public boolean deleteById(int id) {
-		PreparedStatement ps = null;
-		int rowsAffected = -1;
-		try {
-			ps = conn.prepareStatement("DELETE FROM Payment WHERE payment_id = ?");
-			
-			ps.setInt(1, id);
-			
-			rowsAffected = ps.executeUpdate();
-		}
-		catch(SQLException e) {
-			throw new DatabaseException(e.getMessage());
-		}
-		finally {
-			Database.closeStatement(ps);
-		}
-		
-		if(rowsAffected != -1) {
-			return true;
-		}
-		
-		return false;
-	}
-
-	@Override
-	public boolean update(PaymentStatus status, int clientId) {
+	public boolean update(List<Payment> payments) {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
 
 		try {
-			int paymentId = retrievePaymentId(clientId);
+			
+			for(Payment payment : payments) {
+				ps = conn.prepareStatement("UPDATE Payment SET payment_status = ? WHERE payment_time = ?");
 
-			if(paymentId != -1) {
-				ps = conn.prepareStatement("UPDATE Payment SET payment_status = ? WHERE payment_id = ?");
-
-				ps.setInt(1, status.ordinal());
-				ps.setInt(2, paymentId);
+				ps.setInt(1, payment.getStatus().ordinal());
+				ps.setTimestamp(2, new Timestamp(payment.getPaymentTime().getTime()));
 
 				rowsAffected = ps.executeUpdate();
 			}
 
-
 		}
 		catch(SQLException e) {
 			throw new DatabaseException(e.getMessage());
@@ -162,34 +143,6 @@ public class PaymentDaoJdbc implements PaymentDAO{
 		}
 
 		return false;
-	}
-	
-	@Override
-	public int retrievePaymentId(int clientId) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		int paymentId = -1;
-
-		try {
-			ps = conn.prepareStatement("SELECT payment_id FROM Payment WHERE client_t_id = ?");
-
-			ps.setInt(1, clientId);
-
-			rs = ps.executeQuery();
-
-			while(rs.next()) {
-				paymentId = rs.getInt(1);
-			}
-		}
-		catch(SQLException e) {
-			throw new DatabaseException(e.getMessage());
-		}
-		finally {
-			Database.closeResultSet(rs);
-			Database.closeStatement(ps);
-		}
-
-		return paymentId;
 	}
 
 	@Override
