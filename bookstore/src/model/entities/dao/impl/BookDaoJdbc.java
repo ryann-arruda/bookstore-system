@@ -408,5 +408,37 @@ public class BookDaoJdbc implements BookDAO{
 			Database.closeStatement(ps);
 		}
 	}
+
+	@Override
+	public Book retrieve(int id) {
+		AuthorDAO authorDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Author> authors = null;
+		Book book = null;
+		
+		try {
+			authorDao = DAOFactory.getAuthorDAO();
+			ps =  conn.prepareStatement("SELECT * FROM Book WHERE book_id = ?");
+			
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				authors = authorDao.retrieveAllAuthorsBook(rs.getString("title"));
+				book = instantiateBook(rs, authors);
+			}
+		}
+		catch(SQLException e){
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return book;
+	}
 	
 }
