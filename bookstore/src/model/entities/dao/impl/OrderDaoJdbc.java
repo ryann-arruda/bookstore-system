@@ -157,56 +157,6 @@ public class OrderDaoJdbc implements OrderDAO{
 
 	@SuppressWarnings("resource")
 	@Override
-	public Order retrive(int idClient) {
-		ClientDAO clientDao = null;
-		BookDAO bookDao = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Order order = null;
-		
-		try {
-			int orderId = -1;
-			clientDao = DAOFactory.getClientDAO();
-			bookDao = DAOFactory.getBookDAO();
-			
-			ps = conn.prepareStatement("SELECT * FROM Order_t WHERE client_t_id = ?");
-			ps.setInt(1, idClient);
-			
-			rs = ps.executeQuery();
-			
-			while(rs.next()) {				
-				Client client = clientDao.retrieve(idClient);
-				orderId = rs.getInt("order_t_id");
-				
-				order = new Order(client);
-				
-				ps = conn.prepareStatement("SELECT book_id FROM Order_Book WHERE order_t_id = ?");
-				ps.setInt(1, orderId);
-				rs = ps.executeQuery();
-				
-				while(rs.next()) {
-					int bookId = rs.getInt("book_id");
-					
-					order.addNewItem((bookDao.retrieve(bookId)));
-				}
-				
-				if(orderId != -1) {
-					order.setPayment(retrievePaymentOrder(orderId));
-				}
-			}
-		}
-		catch(SQLException e) {
-			throw new DatabaseException(e.getMessage());
-		}
-		finally {
-			Database.closeStatement(ps);
-		}
-		
-		return order;
-	}
-
-	@SuppressWarnings("resource")
-	@Override
 	public boolean deleteById(int id) {
 		PreparedStatement ps = null;
 		int rowsAffected = -1;
@@ -257,13 +207,14 @@ public class OrderDaoJdbc implements OrderDAO{
 	}
 
 	@Override
-	public List<Order> listAllOrders(int idClient) {
-		ClientDAO clientDao = DAOFactory.getClientDAO();
+	public List<Order> listAllOrdersClient(int idClient) {
+		ClientDAO clientDao = null;
 		List<Order> orders = new ArrayList<>();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		
 		try {
+			clientDao = DAOFactory.getClientDAO();
 			
 			ps = conn.prepareStatement("SELECT * FROM Order_t WHERE client_t_id = ?");
 			
@@ -272,13 +223,14 @@ public class OrderDaoJdbc implements OrderDAO{
 			rs = ps.executeQuery();
 			
 			while(rs.next()) {
+				int orderId = rs.getInt("order_t_id");
 				
-				Client client = clientDao.retrieve(idClient); 
+				Client client = clientDao.retrieve(idClient);
 				
 				Order order = new Order(client);
+				order.setPayment(retrievePaymentOrder(orderId));
 				
 				orders.add(order);
-				
 			}
 			
 		}
