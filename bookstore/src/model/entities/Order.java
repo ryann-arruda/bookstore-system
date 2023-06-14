@@ -41,6 +41,10 @@ public class Order {
 		return null;
 	}
 	
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+	
 	public int quantityItems() {
 		return items.size();
 	}
