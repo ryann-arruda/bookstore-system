@@ -7,6 +7,7 @@ import model.entities.Book;
 public interface BookDAO {
 	boolean insert(Book book);
 	Book retrieve(String title);
+	Book retrieve(int id);
 	boolean deleteById(int id);
 	boolean update(Book book, String currentTitle);
 	List<Book> listAll();
