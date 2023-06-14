@@ -124,6 +124,36 @@ public class OrderDaoJdbc implements OrderDAO{
 		
 		return false;
 	}
+	
+	private Payment retrievePaymentOrder(int orderId) {
+		PaymentDAO paymentDao = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Payment payment = null;
+		
+		try {			
+			ps = conn.prepareStatement("SELECT payment_id FROM Order_Payment WHERE order_t_id = ?");
+			ps.setInt(1, orderId);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				paymentDao = DAOFactory.getPaymentDAO();
+				int paymentId = rs.getInt(1);
+				
+				payment = paymentDao.retrieveById(paymentId);
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return payment;
+	}
 
 	@SuppressWarnings("resource")
 	@Override
@@ -135,6 +165,7 @@ public class OrderDaoJdbc implements OrderDAO{
 		Order order = null;
 		
 		try {
+			int orderId = -1;
 			clientDao = DAOFactory.getClientDAO();
 			bookDao = DAOFactory.getBookDAO();
 			
@@ -145,7 +176,7 @@ public class OrderDaoJdbc implements OrderDAO{
 			
 			while(rs.next()) {				
 				Client client = clientDao.retrieve(idClient);
-				int orderId = rs.getInt("order_t_id");
+				orderId = rs.getInt("order_t_id");
 				
 				order = new Order(client);
 				
@@ -157,6 +188,10 @@ public class OrderDaoJdbc implements OrderDAO{
 					int bookId = rs.getInt("book_id");
 					
 					order.addNewItem((bookDao.retrieve(bookId)));
+				}
+				
+				if(orderId != -1) {
+					order.setPayment(retrievePaymentOrder(orderId));
 				}
 			}
 		}
