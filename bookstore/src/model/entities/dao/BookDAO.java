@@ -17,4 +17,6 @@ public interface BookDAO {
 	int retrieveAmountBooks(String title);
 	int retrieveAmountBooks(int id);
 	List<Book> listBooksbyCity(String city);
+	List<Book> listBooksByCategory(String category);
+	List<Book> listBooksByPriceRange(float menor, float maior);
 }
