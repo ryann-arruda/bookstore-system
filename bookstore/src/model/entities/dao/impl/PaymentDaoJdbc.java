@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -25,10 +26,12 @@ public class PaymentDaoJdbc implements PaymentDAO{
 	}
 
 	@Override
-	public boolean insert(Payment payment) {
+	public int insert(Payment payment) {
 		ClientDAO clientDao = null;
 		PreparedStatement ps = null;
+		ResultSet rs = null;
 		int rowsAffected = -1;
+		int paymentId = -1;
 		
 		try {
 			clientDao = DAOFactory.getClientDAO();
@@ -37,7 +40,7 @@ public class PaymentDaoJdbc implements PaymentDAO{
 			
 			if(clientId != -1) {
 				ps = conn.prepareStatement("INSERT INTO Payment (total_amount, payment_status, payment_type, payment_time, client_t_id) VALUES " + 
-											"(?,?,?,?,?)");
+											"(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 				
 				ps.setFloat(1, payment.getTotalAmount());
 				ps.setInt(2, payment.getStatus().ordinal());
@@ -46,6 +49,14 @@ public class PaymentDaoJdbc implements PaymentDAO{
 				ps.setInt(5, clientId);
 				
 				rowsAffected = ps.executeUpdate();
+				
+				if (rowsAffected > 0) {
+					rs = ps.getGeneratedKeys();
+					
+					while(rs.next()) {
+						paymentId = rs.getInt(1);
+					}
+				}
 			}
 		}
 		catch(SQLException e) {
@@ -55,11 +66,7 @@ public class PaymentDaoJdbc implements PaymentDAO{
 			Database.closeStatement(ps);
 		}
 		
-		if(rowsAffected != -1) {
-			return true;
-		}
-		
-		return false;
+		return paymentId;
 	}
 
 	@Override
