@@ -133,3 +133,10 @@ CREATE TABLE Payment_Seller(
     
     PRIMARY KEY (payment_id, seller_id)
 );
+
+CREATE TABLE Order_Payment(
+	order_t_id			INT NOT NULL,
+    payment_id			INT NOT NULL,
+    
+    PRIMARY KEY (order_t_id, payment_id)
+);
