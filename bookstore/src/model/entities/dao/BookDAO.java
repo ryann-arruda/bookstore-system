@@ -15,4 +15,5 @@ public interface BookDAO {
 	int retrieveBookId(String title);
 	int retrieveAmountBooks(String title);
 	int retrieveAmountBooks(int id);
+	List<Book> listBooksbyCity(String city);
 }
