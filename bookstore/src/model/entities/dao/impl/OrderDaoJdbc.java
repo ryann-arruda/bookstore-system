@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import db.Database;
@@ -13,10 +14,13 @@ import db.DatabaseException;
 import model.entities.Book;
 import model.entities.Client;
 import model.entities.Order;
+import model.entities.Payment;
 import model.entities.dao.BookDAO;
 import model.entities.dao.ClientDAO;
 import model.entities.dao.DAOFactory;
 import model.entities.dao.OrderDAO;
+import model.entities.dao.PaymentDAO;
+import model.entities.enums.PaymentType;
 
 public class OrderDaoJdbc implements OrderDAO{
 	
@@ -26,10 +30,12 @@ public class OrderDaoJdbc implements OrderDAO{
 		this.conn = conn;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
-	public boolean insert(Order order) {
+	public boolean insert(Order order, PaymentType paymentType) {
 		ClientDAO clientDao = null;
 		BookDAO bookDao = null;
+		PaymentDAO paymentDao = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		int rowsAffected = -1;
@@ -56,6 +62,7 @@ public class OrderDaoJdbc implements OrderDAO{
 					}
 					
 					bookDao = DAOFactory.getBookDAO();
+					paymentDao = DAOFactory.getPaymentDAO();
 					
 					for(Book book: order.getItems()) {
 						int bookId = bookDao.retrieveBookId(book.getTitle());
@@ -66,6 +73,14 @@ public class OrderDaoJdbc implements OrderDAO{
 						
 						rowsAffected = ps.executeUpdate();
 					}
+					
+					int paymentId = paymentDao.insert(new Payment(order.getTotalAmount(), paymentType , new Date(), order.getClient()));
+					
+					ps = conn.prepareStatement("INSERT INTO Order_Payment (order_t_id, payment_id) VALUES (?,?)");
+					ps.setInt(1, orderId);
+					ps.setInt(2, paymentId);
+					
+					rowsAffected = ps.executeUpdate();
 				}
 			}
 		}
