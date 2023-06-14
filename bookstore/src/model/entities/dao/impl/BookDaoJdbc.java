@@ -510,5 +510,45 @@ public class BookDaoJdbc implements BookDAO{
 		
 		return books;
 	}
+
+	@Override
+	public List<Book> listBooksByPriceRange(float menor, float maior) {
+		AuthorDAO authorDao = DAOFactory.getAuthorDAO();
+		List<Book> books = new ArrayList<>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			
+			if(menor > maior || menor < 0.0f || maior < 0.0f ) {
+				return null;
+			}
+			
+			ps = conn.prepareStatement("SELECT * FROM Book WHERE price >= ? AND price <= ?");
+			
+			ps.setFloat(1, menor);
+			ps.setFloat(2, maior);
+			
+			rs = ps.executeQuery();
+			
+			
+			while(rs.next()) {
+				String bookTitle = rs.getString("title");
+				
+				List<Author> authors = authorDao.retrieveAllAuthorsBook(bookTitle);
+				
+				books.add(instantiateBook(rs, authors));
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return books;
+	}
 	
 }
