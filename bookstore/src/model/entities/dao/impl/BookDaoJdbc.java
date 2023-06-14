@@ -409,4 +409,39 @@ public class BookDaoJdbc implements BookDAO{
 		}
 	}
 	
+	@Override
+	public List<Book> listBooksbyCity(String city) {
+		AuthorDAO authorDao = DAOFactory.getAuthorDAO();
+		List<Book> books = new ArrayList<>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		try {
+			
+			ps = conn.prepareStatement("SELECT * FROM Book WHERE place_publication = ?");
+			
+			ps.setString(1, city);
+			
+			rs = ps.executeQuery();
+			
+			
+			while(rs.next()) {
+				String bookTitle = rs.getString("title");
+				
+				List<Author> authors = authorDao.retrieveAllAuthorsBook(bookTitle);
+				
+				books.add(instantiateBook(rs, authors));
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return books;
+	}
+	
 }
