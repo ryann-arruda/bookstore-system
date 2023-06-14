@@ -29,6 +29,32 @@ public class OrderDaoJdbc implements OrderDAO{
 	public OrderDaoJdbc(Connection conn) {
 		this.conn = conn;
 	}
+	
+	private int retrievePaymentIdOrder(int orderId) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		int paymentId = -1;
+		
+		try {
+			ps = conn.prepareStatement("SELECT payment_id FROM Order_Payment WHERE order_t_id = ?");
+			ps.setInt(1, orderId);
+			
+			rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				paymentId = rs.getInt(1);
+			}
+		}
+		catch(SQLException e) {
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			Database.closeResultSet(rs);
+			Database.closeStatement(ps);
+		}
+		
+		return paymentId;
+	}
 
 	@SuppressWarnings("resource")
 	@Override
@@ -162,6 +188,21 @@ public class OrderDaoJdbc implements OrderDAO{
 				ps.setInt(1, id);
 				
 				rowsAffected = ps.executeUpdate();
+				
+				if (rowsAffected > 0) {
+					int paymentId = retrievePaymentIdOrder(id);
+					ps = conn.prepareStatement("DELETE FROM Order_Payment WHERE order_t_id = ?");
+					ps.setInt(1, id);
+					
+					rowsAffected = ps.executeUpdate();
+					
+					if (rowsAffected > 0) {
+						ps = conn.prepareStatement("DELETE FROM Payment WHERE payment_id = ?");
+						ps.setInt(1, paymentId);
+						
+						rowsAffected = ps.executeUpdate();
+					}
+				}
 			}
 		}
 		
